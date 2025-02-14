@@ -23,12 +23,14 @@ jobs:
             libopenmpi-dev python3-dev cmake libgmp-dev \
             build-essential gcc g++ gfortran make \
             libmpfr-dev libmpc-dev libblas-dev liblapack-dev \
-            libsymengine-dev
+            libsymengine-dev python3-pip
+          pip install --user symengine
 
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
           python-version: '3.11.7'
+          check-latest: false
 
       - name: Install Poetry
         run: |
