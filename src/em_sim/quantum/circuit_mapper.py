@@ -47,10 +47,10 @@ class MaxwellCircuitMapper:
     def _initialize_hamiltonian_templates(self):
         """Precompute common Hamiltonian components for Maxwell systems."""
         # Use SparsePauliOp for operator composition
-        zzi = SparsePauliOp("ZZI") ^ SparsePauliOp("I")  # Tensor product
-        xxi = SparsePauliOp("XXI") ^ SparsePauliOp("I")
-        yyz = SparsePauliOp("YYZ")
-        xzx = SparsePauliOp("XZX")
+        zzi = SparsePauliOp.from_list([("ZZI", 1.0)])
+        xxi = SparsePauliOp.from_list([("XXI", 1.0)])
+        yyz = SparsePauliOp.from_list([("YYZ", 1.0)])
+        xzx = SparsePauliOp.from_list([("XZX", 1.0)])
 
         self.cavity_hamiltonian = {
             "TE": (zzi + xxi).simplify(),
