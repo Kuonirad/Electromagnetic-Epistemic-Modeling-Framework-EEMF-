@@ -9,23 +9,35 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        python-version: ["3.12"]
+    env:
+      PYTHON_VERSION: "3.11.7"
 
     steps:
     - uses: actions/checkout@v4
-    - name: Set up Python ${{ matrix.python-version }}
+    - name: Set up Python
       uses: actions/setup-python@v4
       with:
-        python-version: ${{ matrix.python-version }}
+        python-version: ${{ env.PYTHON_VERSION }}
+        architecture: 'x64'
+        cache: 'pip'
+    
     - name: Install Poetry
       run: |
-        curl -sSL https://install.python-poetry.org | python3 -
+        python -m pip install --upgrade pip
+        python -m pip install pipx
+        pipx install poetry==1.7.1
+    
+    - name: Configure Poetry
+      run: |
+        poetry env use ${{ env.pythonLocation }}/bin/python
+        poetry config virtualenvs.in-project true
+    
     - name: Install dependencies
       run: poetry install
+    
     - name: Run tests with coverage
       run: poetry run pytest --cov=src/em_sim --cov-report=xml
+    
     - name: Upload coverage to Codecov
       uses: codecov/codecov-action@v3
       with:
@@ -34,17 +46,32 @@ jobs:
 
   lint:
     runs-on: ubuntu-latest
+    env:
+      PYTHON_VERSION: "3.11.7"
+    
     steps:
     - uses: actions/checkout@v4
     - name: Set up Python
       uses: actions/setup-python@v4
       with:
-        python-version: "3.12"
+        python-version: ${{ env.PYTHON_VERSION }}
+        architecture: 'x64'
+        cache: 'pip'
+    
     - name: Install Poetry
       run: |
-        curl -sSL https://install.python-poetry.org | python3 -
+        python -m pip install --upgrade pip
+        python -m pip install pipx
+        pipx install poetry==1.7.1
+    
+    - name: Configure Poetry
+      run: |
+        poetry env use ${{ env.pythonLocation }}/bin/python
+        poetry config virtualenvs.in-project true
+    
     - name: Install dependencies
       run: poetry install
+    
     - name: Run linters
       run: |
         poetry run black --check .
