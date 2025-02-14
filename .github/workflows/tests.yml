@@ -10,6 +10,8 @@ jobs:
   test:
     name: Test
     runs-on: ubuntu-latest
+    env:
+      PYTHON_VERSION: "3.11.7"
     steps:
       - uses: actions/checkout@v3
 
@@ -34,8 +36,9 @@ jobs:
 
       - name: Install dependencies
         run: |
+          python -V | grep "3.11.7" || exit 1
           python -m pip install --upgrade pip setuptools wheel
-          poetry env use python
+          poetry env use $(which python)
           poetry install --with mpi --extras mpi --no-interaction
           poetry env info
 
