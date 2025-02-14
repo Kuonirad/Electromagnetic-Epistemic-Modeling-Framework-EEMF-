@@ -38,7 +38,7 @@ jobs:
       - name: Install dependencies
         run: |
           python -m pip install --upgrade "pip==23.3.1" "setuptools==69.0.3" wheel
-          poetry env use python3.11
+          poetry config virtualenvs.in-project true
           poetry install --with mpi --extras mpi
 
       - name: Run tests
