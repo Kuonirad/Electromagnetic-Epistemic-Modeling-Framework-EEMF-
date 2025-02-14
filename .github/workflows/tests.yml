@@ -16,14 +16,14 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install -y software-properties-common
+          sudo add-apt-repository ppa:symengine/ppa
           sudo add-apt-repository universe
-          sudo add-apt-repository 'deb http://archive.ubuntu.com/ubuntu/ noble-backports main restricted universe multiverse'
           sudo apt-get update
           sudo apt-get install -y \
             libopenmpi-dev python3-dev cmake libgmp-dev \
             build-essential gcc g++ gfortran make \
             libmpfr-dev libmpc-dev libblas-dev liblapack-dev \
-            python3-symengine
+            libsymengine-dev
 
       - name: Set up Python
         uses: actions/setup-python@v4
