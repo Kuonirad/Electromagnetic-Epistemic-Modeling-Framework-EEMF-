@@ -37,6 +37,7 @@ matplotlib = "^3.8.2"
 
 [tool.poetry.extras]
 mpi = ["mpi4py", "qutip", "cupy-cuda12x", "h5py", "qiskit", "qiskit-terra", "qiskit-nature", "qiskit-aer", "qiskit-algorithms"]
+qutip = []
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^8.3.4"
