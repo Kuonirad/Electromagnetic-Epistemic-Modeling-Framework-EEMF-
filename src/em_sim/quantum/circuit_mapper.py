@@ -6,17 +6,17 @@ from typing import Any, Dict, List
 import numpy as np
 from qiskit import QuantumCircuit, QuantumRegister, transpile
 from qiskit.circuit.library import PauliEvolutionGate
+from qiskit.providers.aer import AerSimulator
 from qiskit.quantum_info import SparsePauliOp
 from qiskit.transpiler import CouplingMap
-from qiskit.providers.aer import AerSimulator  # Add required imports
+
+from .error_mitigation import apply_zne
 
 # Define Pauli operators
-X = SparsePauliOp("X")
-Y = SparsePauliOp("Y")
-Z = SparsePauliOp("Z")
-IDENTITY = SparsePauliOp("I")  # Renamed to avoid ambiguity
-
-from .error_mitigation import apply_zne  # noqa: E402
+X = SparsePauliOp.from_list([("X", 1.0)])
+Y = SparsePauliOp.from_list([("Y", 1.0)])
+Z = SparsePauliOp.from_list([("Z", 1.0)])
+IDENTITY = SparsePauliOp.from_list([("I", 1.0)])
 
 
 @dataclass
