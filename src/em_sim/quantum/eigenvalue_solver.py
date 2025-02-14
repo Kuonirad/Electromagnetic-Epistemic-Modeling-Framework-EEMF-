@@ -5,7 +5,7 @@ from typing import Tuple
 import numpy as np
 from qiskit import QuantumCircuit
 from qiskit.algorithms.optimizers import SPSA
-from qiskit_algorithms import VQE
+from qiskit.algorithms import VQE  # Use older import path for base dependencies
 
 
 class MaxwellEigenvalueSolver:
