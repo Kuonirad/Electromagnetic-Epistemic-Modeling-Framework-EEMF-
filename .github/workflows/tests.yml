@@ -33,18 +33,14 @@ jobs:
 
       - name: Install dependencies
         run: |
-          python -V | grep "3.11.7" || exit 1
           python -m pip install --upgrade pip setuptools wheel
-          poetry env use $(which python)
+          poetry env use python
           poetry install --with mpi --extras mpi --no-interaction
           poetry env info
 
-      - name: Run tests
+      - name: Run tests and checks
         run: |
           poetry run pytest
-
-      - name: Check formatting
-        run: |
           poetry run black . --check
           poetry run isort . --check
           poetry run flake8 .
