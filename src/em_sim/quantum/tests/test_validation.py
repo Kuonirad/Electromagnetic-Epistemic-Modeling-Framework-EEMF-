@@ -3,11 +3,12 @@
 import numpy as np
 import pytest
 from qiskit import QuantumCircuit
-from qiskit.providers.aer import AerSimulator
-from qiskit.quantum_info import Operator
 
-from em_sim.quantum.validation import (compute_error_bounds,
-                                       validate_causality, validate_unitarity)
+from em_sim.quantum.validation import (
+    compute_error_bounds,
+    validate_causality,
+    validate_unitarity,
+)
 
 
 @pytest.fixture

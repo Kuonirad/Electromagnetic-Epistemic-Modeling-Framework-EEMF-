@@ -11,20 +11,19 @@ repos:
       - id: detect-private-key
 
   - repo: https://github.com/psf/black
-    rev: 24.1.1
+    rev: 25.1.0
     hooks:
       - id: black
+        args: [--safe, --quiet]
 
-  - repo: https://github.com/pycqa/isort
-    rev: 5.13.2
+  - repo: https://github.com/PyCQA/isort
+    rev: 6.0.0
     hooks:
       - id: isort
+        args: [--profile=black, --filter-files]
 
-  - repo: https://github.com/pycqa/flake8
-    rev: 7.0.0
+  - repo: https://github.com/PyCQA/flake8
+    rev: 7.1.1
     hooks:
       - id: flake8
-        additional_dependencies:
-          - flake8-docstrings
-          - flake8-bugbear
-          - flake8-comprehensions
+        args: [--config=setup.cfg]

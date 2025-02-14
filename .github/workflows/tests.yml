@@ -14,7 +14,7 @@ jobs:
     env:
       PYTHON_VERSION: "3.11.7"
       POETRY_VERSION: "1.7.1"
-    
+
     steps:
       - uses: actions/checkout@v3
 
@@ -22,11 +22,12 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install -y \
-            openmpi-bin libopenmpi-dev \
-            python3-dev cmake libgmp-dev \
-            build-essential gcc g++ gfortran make \
-            libmpfr-dev libmpc-dev libblas-dev liblapack-dev \
-            python3-pip
+            libopenmpi-dev openmpi-bin \
+            libhdf5-dev hdf5-tools \
+            libgmp-dev cmake \
+            build-essential gfortran
+        env:
+          DEBIAN_FRONTEND: noninteractive
 
       - name: Set up Python
         uses: actions/setup-python@v4
@@ -46,23 +47,14 @@ jobs:
           poetry env use ${{ env.pythonLocation }}/bin/python
           poetry config virtualenvs.in-project true
 
-      - name: Install system dependencies
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y \
-            openmpi-bin libopenmpi-dev \
-            libgmp-dev cmake \
-            build-essential gfortran
-        env:
-          DEBIAN_FRONTEND: noninteractive
-
       - name: Install dependencies
         run: |
-          poetry install --with mpi --extras mpi --all-extras --no-interaction \
-            --no-ansi --sync
+          poetry install --with mpi --no-interaction --sync
         env:
           PYTHON_VERSION: "3.11.7"
           POETRY_VERSION: "1.7.1"
+          HDF5_DIR: /usr/include/hdf5/serial
+          DEBIAN_FRONTEND: noninteractive
 
       - name: Validate MPI
         run: |
@@ -71,11 +63,16 @@ jobs:
 
       - name: Run tests
         run: |
-          poetry run pytest
+          poetry run pytest --cov=src/em_sim --cov-report=xml
+        env:
+          PYTHONPATH: ${{ env.pythonLocation }}/bin:$PYTHONPATH
 
       - name: Check formatting
         if: success()
         run: |
-          poetry run black . --check
-          poetry run isort . --check
+          poetry run black --check .
+          poetry run isort --check-only .
           poetry run flake8 .
+        env:
+          BLACK_CACHE_DIR: .cache/black
+          ISORT_CACHE_DIR: .cache/isort
