@@ -8,10 +8,12 @@ on:
 
 jobs:
   test:
-    name: Test Python 3.11
-    strategy:
-      fail-fast: false
+    name: Test
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ["3.11.7"]
+      fail-fast: false
     steps:
       - uses: actions/checkout@v3
 
@@ -28,10 +30,10 @@ jobs:
             python3-pip
           python3 -m pip install --user symengine
 
-      - name: Set up Python
+      - name: Set up Python ${{ matrix.python-version }}
         uses: actions/setup-python@v4
         with:
-          python-version: '3.11.7'
+          python-version: ${{ matrix.python-version }}
           check-latest: false
 
       - name: Install Poetry
@@ -43,7 +45,7 @@ jobs:
           python -m pip install --upgrade "pip==23.3.1" "setuptools==69.0.3" wheel
           poetry config virtualenvs.in-project true
           poetry config installer.max-workers 4
-          poetry install --with mpi --extras mpi --no-interaction
+          poetry install --with mpi --extras mpi --no-interaction --no-cache
 
       - name: Run tests
         run: |
