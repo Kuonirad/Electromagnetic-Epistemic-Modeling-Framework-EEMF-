@@ -1,12 +1,3 @@
-[[tool.poetry.source]]
-name = "PyPI"
-priority = "primary"
-
-[[tool.poetry.source]]
-name = "pytorch"
-url = "https://download.pytorch.org/whl/cpu"
-priority = "supplemental"
-
 [tool.poetry]
 name = "em-sim"
 version = "0.1.0"
@@ -16,7 +7,7 @@ license = "MIT"
 readme = "README.md"
 
 [tool.poetry.dependencies]
-python = "3.11.7"
+python = "^3.11"
 numpy = "1.26.3"
 scipy = "1.12.0"
 symengine = "^0.11.0"
@@ -32,7 +23,7 @@ qutip = { version = "^5.1.1" }
 cupy-cuda12x = { version = "^13.3.0" }
 h5py = { version = "^3.12.1" }
 qiskit = { version = "0.45.0" }
-qiskit-terra = { version = "0.45.0" }
+qiskit-terra = { version = ">=0.46.2,<0.47" }
 qiskit-nature = { version = "^0.7.2" }
 qiskit-aer = { version = "0.12.0" }
 qiskit-algorithms = { version = "0.3.1" }
