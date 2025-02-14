@@ -10,6 +10,8 @@ jobs:
   test:
     name: Test
     runs-on: ubuntu-latest
+    env:
+      PYTHON_VERSION: 3.11.7
     steps:
       - uses: actions/checkout@v3
 
@@ -39,7 +41,7 @@ jobs:
       - name: Install dependencies
         run: |
           python -m pip install --upgrade "pip==23.3.1" "setuptools==69.0.3" wheel
-          poetry env use python3.11
+          poetry env use ${{ env.PYTHON_VERSION }}
           poetry config virtualenvs.in-project true
           poetry install --with mpi --extras mpi --no-interaction --no-ansi --no-cache
           poetry env info
