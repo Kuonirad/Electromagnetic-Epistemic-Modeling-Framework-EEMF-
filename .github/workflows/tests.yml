@@ -46,13 +46,28 @@ jobs:
           poetry env use ${{ env.pythonLocation }}/bin/python
           poetry config virtualenvs.in-project true
 
+      - name: Install system dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            openmpi-bin libopenmpi-dev \
+            libgmp-dev cmake \
+            build-essential gfortran
+        env:
+          DEBIAN_FRONTEND: noninteractive
+
       - name: Install dependencies
         run: |
-          poetry install --with mpi --extras mpi --no-interaction \
+          poetry install --with mpi --extras mpi --all-extras --no-interaction \
             --no-ansi --sync
         env:
           PYTHON_VERSION: "3.11.7"
           POETRY_VERSION: "1.7.1"
+
+      - name: Validate MPI
+        run: |
+          mpirun --version
+          poetry run python -c "import mpi4py; print(mpi4py.get_config())"
 
       - name: Run tests
         run: |
