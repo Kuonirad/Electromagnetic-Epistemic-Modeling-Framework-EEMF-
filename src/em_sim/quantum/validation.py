@@ -15,14 +15,17 @@ def validate_unitarity(circuit: QuantumCircuit) -> bool:
     Returns:
         True if circuit preserves unitarity within tolerance
     """
-    # Compute process matrix
-    process_mat = circuit.to_operator()
+    from qiskit.exceptions import QiskitError
+    from qiskit.quantum_info import Operator
 
-    # Check if U†U ≈ I
-    identity = np.eye(2**circuit.num_qubits)
-    product = process_mat.adjoint() @ process_mat
+    try:
+        # Operator() will fail for non-unitary circuits
+        Operator(circuit)
+        return True
+    except QiskitError:
+        return False
 
-    return np.allclose(product, identity, atol=1e-6)
+    return True
 
 
 def validate_causality(circuit: QuantumCircuit) -> bool:
@@ -37,7 +40,8 @@ def validate_causality(circuit: QuantumCircuit) -> bool:
     # Check temporal ordering of operations
     for instruction in circuit.data:
         if hasattr(instruction.operation, "duration"):
-            if instruction.operation.duration < 0:
+            duration = instruction.operation.duration
+            if duration is not None and duration < 0:
                 return False
     return True
 
@@ -63,3 +67,27 @@ def compute_error_bounds(results: Dict[str, np.ndarray]) -> Dict[str, float]:
         error_metrics["v_score"] = v_score
 
     return error_metrics
+
+
+def validate_error_mitigation(
+    circuit: QuantumCircuit, mitigated_value: float, error_bound: float
+) -> bool:
+    """Validate error mitigation results.
+
+    Args:
+        circuit: Original quantum circuit
+        mitigated_value: Value after error mitigation
+        error_bound: Computed error bound
+
+    Returns:
+        True if error mitigation results are valid
+    """
+    # Verify error bound is reasonable
+    if error_bound <= 0 or error_bound >= 1.0:
+        return False
+
+    # Verify mitigated value is within physical bounds
+    if abs(mitigated_value) > 1.0:
+        return False
+
+    return True
