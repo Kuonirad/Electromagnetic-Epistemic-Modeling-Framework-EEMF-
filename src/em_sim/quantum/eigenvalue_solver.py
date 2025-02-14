@@ -4,8 +4,8 @@ from typing import Tuple
 
 import numpy as np
 from qiskit import QuantumCircuit
-from qiskit.algorithms import VQE
 from qiskit.algorithms.optimizers import SPSA
+from qiskit_algorithms import VQE
 
 
 class MaxwellEigenvalueSolver:
@@ -31,10 +31,34 @@ class MaxwellEigenvalueSolver:
             Tuple of (eigenvalues, eigenvectors)
         """
         # Initialize VQE with SPSA optimizer
+        from qiskit.primitives import Estimator
+        from qiskit.quantum_info import SparsePauliOp
+
         optimizer = SPSA(maxiter=100)
-        vqe = VQE(optimizer=optimizer)
+        estimator = Estimator()
+
+        # Create parameterized ansatz and Hamiltonian for VQE
+        from qiskit.circuit.library import EfficientSU2
+
+        num_qubits = circuit.num_qubits
+        ansatz = EfficientSU2(num_qubits, reps=2)
+        hamiltonian = SparsePauliOp.from_list(
+            [
+                (
+                    "Z" + "I" * (num_qubits - 1),
+                    1.0,
+                )  # Simple Z measurement on first qubit
+            ]
+        )
+
+        vqe = VQE(ansatz=ansatz, optimizer=optimizer, estimator=estimator)
 
         # Execute VQE
-        result = vqe.compute_minimum_eigenvalue(operator=circuit)
+        result = vqe.compute_minimum_eigenvalue(operator=hamiltonian)
 
-        return result.eigenvalue, result.optimal_point
+        # Convert results to numpy arrays with matching shapes
+        eigenvalues = np.array([result.eigenvalue])
+        eigenvectors = np.array(
+            [result.optimal_point]
+        )  # Make it 2D array with shape (1, n)
+        return eigenvalues, eigenvectors

@@ -53,49 +53,50 @@ def test_topological_boundary_mapping(circuit_mapper):
     assert circuit.num_qubits == circuit_mapper.config.qubit_count
 
 
-def test_hardware_optimization(circuit_mapper):
+def test_hardware_optimization():
     """Test hardware-specific circuit optimization."""
-    # Create test circuit
+    # Create test circuit with 6 qubits to match coupling map
+    config = CircuitConfig(qubit_count=6)
+    mapper = MaxwellCircuitMapper(config)
     dimensions = [1.0, 1.0, 1.0]
     boundary_conditions = {"type": "PEC"}
-    circuit = circuit_mapper.map_cavity_modes(dimensions, boundary_conditions)
+    circuit = mapper.map_cavity_modes(dimensions, boundary_conditions)
 
     # Test superconducting optimization
     hw_config = HardwareConfig.create_superconducting()
-    optimized = circuit_mapper._hardware_optimize(circuit, hw_config)
+    optimized = mapper._hardware_optimize(circuit, hw_config)
     assert isinstance(optimized, QuantumCircuit)
 
     # Test trapped ion optimization
     hw_config = HardwareConfig.create_trapped_ion()
-    optimized = circuit_mapper._hardware_optimize(circuit, hw_config)
+    optimized = mapper._hardware_optimize(circuit, hw_config)
     assert isinstance(optimized, QuantumCircuit)
 
 
 def test_zne_error_mitigation():
     """Test Zero-Noise Extrapolation error mitigation."""
     config = CircuitConfig(
-        qubit_count=2,
+        qubit_count=6,  # Match coupling map size
         error_mitigation=True,
-        zne_config={'scale_factors': [1, 2, 3]}
+        zne_config={"scale_factors": [1, 2, 3]},
     )
     mapper = MaxwellCircuitMapper(config)
-    
+
     # Create test circuit
-    circuit = QuantumCircuit(2)
+    circuit = QuantumCircuit(6)  # Match coupling map size
     circuit.h(0)
     circuit.cx(0, 1)
-    
+
     # Apply optimization with ZNE
-    optimized = mapper._hardware_optimize(
-        circuit,
-        HardwareConfig.create_superconducting()
+    _ = mapper._hardware_optimize(
+        circuit, HardwareConfig.create_superconducting()
     )
-    
+
     # Verify error metrics
-    assert hasattr(mapper, '_error_metrics')
-    assert 'mitigated_value' in mapper._error_metrics
-    assert 'error_bound' in mapper._error_metrics
-    assert mapper._error_metrics['error_bound'] > 0
+    assert hasattr(mapper, "_error_metrics")
+    assert "mitigated_value" in mapper._error_metrics
+    assert "error_bound" in mapper._error_metrics
+    assert mapper._error_metrics["error_bound"] > 0
 
 
 def test_error_bound_calculation():
