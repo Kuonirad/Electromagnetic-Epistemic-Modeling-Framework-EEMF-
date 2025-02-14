@@ -7,6 +7,48 @@ on:
     branches: [ main ]
 
 jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Install system dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            libopenmpi-dev python3-dev cmake libgmp-dev \
+            build-essential gcc g++ gfortran make \
+            libmpfr-dev libmpc-dev libblas-dev liblapack-dev
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11.7'
+          cache: 'pip'
+
+      - name: Install Poetry
+        uses: snok/install-poetry@v1
+        with:
+          version: 1.7.1
+          virtualenvs-create: true
+          virtualenvs-in-project: true
+
+      - name: Configure Poetry
+        run: |
+          poetry env use 3.11.7
+          poetry config virtualenvs.create true
+          poetry config virtualenvs.in-project true
+
+      - name: Install dependencies
+        run: |
+          poetry install --with mpi --extras mpi --no-interaction
+
+      - name: Run linting
+        run: |
+          poetry run black . --check
+          poetry run isort . --check
+          poetry run flake8 .
+
   test:
     runs-on: ubuntu-latest
     steps:
@@ -45,12 +87,6 @@ jobs:
 
       - name: Run tests
         run: poetry run pytest
-
-      - name: Run linting
-        run: |
-          poetry run black . --check
-          poetry run isort . --check
-          poetry run flake8 .
     steps:
       - uses: actions/checkout@v3
 
