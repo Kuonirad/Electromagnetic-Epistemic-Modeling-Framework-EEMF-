@@ -135,12 +135,12 @@ class MaxwellCircuitMapper:
         # Generate TE/TM Hamiltonians
         for qubit in range(self.config.qubit_count - 2):
             # Apply evolution only if we have enough qubits
-            if qubit + 3 < self.config.qubit_count:
+            if qubit + 2 < self.config.qubit_count:
                 qc.append(
                     PauliEvolutionGate(
                         self.cavity_hamiltonian["TE"], time=dimensions[0] / 2
                     ),
-                    [qubit, qubit + 1, qubit + 2, qubit + 3],
+                    [qubit, qubit + 1, qubit + 2],
                 )
 
         qc.barrier()
