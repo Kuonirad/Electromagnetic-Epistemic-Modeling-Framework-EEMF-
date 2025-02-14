@@ -3,7 +3,6 @@
 import numpy as np
 import pytest
 from qiskit import QuantumCircuit
-from qiskit.providers.aer import AerSimulator
 
 from em_sim.quantum.circuit_mapper import CircuitConfig, MaxwellCircuitMapper
 from em_sim.quantum.error_mitigation import compute_error_bounds
