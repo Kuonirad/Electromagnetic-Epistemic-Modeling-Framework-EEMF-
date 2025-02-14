@@ -9,6 +9,11 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ["3.11.7"]
+      fail-fast: false
+
     steps:
       - uses: actions/checkout@v3
 
@@ -20,11 +25,10 @@ jobs:
             build-essential gcc g++ gfortran make \
             libmpfr-dev libmpc-dev libblas-dev liblapack-dev
 
-      - uses: actions/setup-python@v4
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v4
         with:
-          python-version: '3.11.7'
-          architecture: 'x64'
-          cache: 'pip'
+          python-version: ${{ matrix.python-version }}
 
       - name: Install Poetry
         uses: snok/install-poetry@v1
