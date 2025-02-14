@@ -23,15 +23,14 @@ symengine = "^0.11.0"
 torch = { version = ">=2.2,<2.3", python = "<3.12" }
 matplotlib = "^3.8.2"
 pyquil = { version = ">=4.8.1,<5.0" }
-qiskit = ">=1.0.0,<1.1"  # Prevent major version jumps
+qiskit = { version = ">=1.0.0,<1.1", extras = ["all"] }  # Include all qiskit extras
 h5py = { version = ">=3.11.0", markers = "sys_platform != 'win32'" }
+mpi4py = { version = "^3.1.5", markers = "sys_platform != 'win32'" }
 
 [tool.poetry.group.mpi]
 optional = true
 
 [tool.poetry.group.mpi.dependencies]
-mpi4py = { version = "^3.1.5", markers = "sys_platform != 'win32'" }
-
 qutip = { version = "^5.1.1" }
 cupy-cuda12x = { version = "^13.3.0" }
 qiskit-terra = { version = ">=0.46.2,<0.47" }
