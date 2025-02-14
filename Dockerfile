@@ -2,6 +2,8 @@ FROM nvcr.io/nvidia/pytorch:23.10-py3
 
 # Install system dependencies
 RUN apt-get update && apt-get install -y \
+    libopenmpi-dev \
+    python3-dev \
     openmpi-bin \
     fftw3-dev \
     && rm -rf /var/lib/apt/lists/*
