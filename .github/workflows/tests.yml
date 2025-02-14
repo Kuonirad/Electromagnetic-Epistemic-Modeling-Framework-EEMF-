@@ -1,4 +1,4 @@
-name: Tests
+name: Test
 
 on:
   push:
@@ -8,10 +8,7 @@ on:
 
 jobs:
   test:
-    name: Test
     runs-on: ubuntu-latest
-    env:
-      PYTHON_VERSION: "3.11.7"
     steps:
       - uses: actions/checkout@v3
 
@@ -23,11 +20,11 @@ jobs:
             build-essential gcc g++ gfortran make \
             libmpfr-dev libmpc-dev libblas-dev liblapack-dev
 
-      - name: Set up Python
-        uses: actions/setup-python@v4
+      - uses: actions/setup-python@v4
         with:
           python-version: '3.11.7'
-          check-latest: false
+          architecture: 'x64'
+          cache: 'pip'
 
       - name: Install Poetry
         run: |
@@ -67,11 +64,11 @@ jobs:
             python3-pip
           python3 -m pip install --user symengine
 
-      - name: Set up Python
-        uses: actions/setup-python@v4
+      - uses: actions/setup-python@v4
         with:
           python-version: '3.11.7'
-          check-latest: false
+          architecture: 'x64'
+          cache: 'pip'
 
       - name: Install Poetry
         run: |
