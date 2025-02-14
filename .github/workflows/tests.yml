@@ -7,13 +7,51 @@ on:
     branches: [ main ]
 
 jobs:
-  lint:
-    name: Lint
-    runs-on: ubuntu-latest
-
   test:
     name: Test
     runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Install system dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y software-properties-common
+          sudo add-apt-repository universe
+          sudo apt-get update
+          sudo apt-get install -y \
+            libopenmpi-dev python3-dev cmake libgmp-dev \
+            build-essential gcc g++ gfortran make \
+            libmpfr-dev libmpc-dev libblas-dev liblapack-dev \
+            python3-pip
+          python3 -m pip install --user symengine
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11.7'
+          check-latest: false
+
+      - name: Install Poetry
+        run: |
+          curl -sSL https://install.python-poetry.org | python3 -
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade "pip==23.3.1" "setuptools==69.0.3" wheel
+          poetry config virtualenvs.create false
+          poetry install --with mpi --extras mpi --no-interaction --no-ansi --no-cache
+          python -V
+
+      - name: Run tests
+        run: |
+          poetry run pytest
+
+      - name: Check formatting
+        run: |
+          poetry run black . --check
+          poetry run isort . --check
+          poetry run flake8 .
     steps:
       - uses: actions/checkout@v3
 
