@@ -23,6 +23,7 @@ qutip = "^5.1.1"
 cupy-cuda12x = "^13.3.0"
 h5py = "^3.12.1"
 qiskit = "0.45.0"
+qiskit-terra = "0.45.0"  # Pin to match qiskit version
 qiskit-nature = "^0.7.2"
 qiskit-aer = "0.12.0"
 qiskit-algorithms = "0.3.1"
