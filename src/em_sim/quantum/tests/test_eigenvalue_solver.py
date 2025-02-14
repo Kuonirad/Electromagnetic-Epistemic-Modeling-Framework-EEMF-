@@ -2,10 +2,9 @@
 
 import numpy as np
 import pytest
-from qiskit import QuantumCircuit
 
+from em_sim.quantum.circuit_mapper import CircuitConfig, MaxwellCircuitMapper
 from em_sim.quantum.eigenvalue_solver import MaxwellEigenvalueSolver
-from em_sim.quantum.circuit_mapper import MaxwellCircuitMapper, CircuitConfig
 
 
 @pytest.fixture
@@ -33,7 +32,7 @@ def test_solver_initialization(eigenvalue_solver):
 def test_solve_cavity_modes(eigenvalue_solver, test_circuit):
     """Test solving cavity mode eigenvalue problem."""
     eigenvalues, eigenvectors = eigenvalue_solver.solve(test_circuit)
-    
+
     assert isinstance(eigenvalues, np.ndarray)
     assert isinstance(eigenvectors, np.ndarray)
     assert len(eigenvalues.shape) == 1
