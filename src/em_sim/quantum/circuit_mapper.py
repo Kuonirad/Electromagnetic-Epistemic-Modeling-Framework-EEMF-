@@ -8,6 +8,7 @@ from qiskit import QuantumCircuit, QuantumRegister, transpile
 from qiskit.circuit.library import PauliEvolutionGate
 from qiskit.quantum_info import SparsePauliOp
 from qiskit.transpiler import CouplingMap
+from qiskit.providers.aer import AerSimulator  # Add required imports
 
 # Define Pauli operators
 X = SparsePauliOp("X")
