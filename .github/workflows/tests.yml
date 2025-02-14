@@ -10,23 +10,16 @@ jobs:
   test:
     name: Test
     runs-on: ubuntu-latest
-    env:
-      PYTHON_VERSION: 3.11.7
     steps:
       - uses: actions/checkout@v3
 
       - name: Install system dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y software-properties-common
-          sudo add-apt-repository universe
-          sudo apt-get update
           sudo apt-get install -y \
             libopenmpi-dev python3-dev cmake libgmp-dev \
             build-essential gcc g++ gfortran make \
-            libmpfr-dev libmpc-dev libblas-dev liblapack-dev \
-            python3-pip
-          python3 -m pip install --user symengine
+            libmpfr-dev libmpc-dev libblas-dev liblapack-dev
 
       - name: Set up Python
         uses: actions/setup-python@v4
@@ -37,13 +30,13 @@ jobs:
       - name: Install Poetry
         run: |
           curl -sSL https://install.python-poetry.org | python3 -
+          poetry --version
 
       - name: Install dependencies
         run: |
-          python -m pip install --upgrade "pip==23.3.1" "setuptools==69.0.3" wheel
-          poetry env use ${{ env.PYTHON_VERSION }}
-          poetry config virtualenvs.in-project true
-          poetry install --with mpi --extras mpi --no-interaction --no-ansi --no-cache
+          python -m pip install --upgrade pip setuptools wheel
+          poetry env use python
+          poetry install --with mpi --extras mpi --no-interaction
           poetry env info
 
       - name: Run tests
