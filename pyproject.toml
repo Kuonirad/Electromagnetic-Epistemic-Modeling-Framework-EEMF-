@@ -1,3 +1,8 @@
+[[tool.poetry.source]]
+name = "pytorch"
+url = "https://download.pytorch.org/whl/cpu"
+priority = "supplemental"
+
 [tool.poetry]
 name = "em-sim"
 version = "0.1.0"
@@ -7,15 +12,21 @@ license = "MIT"
 readme = "README.md"
 
 [tool.poetry.dependencies]
-python = ">=3.11,<3.13"
+python = "^3.9"
 numpy = "1.26.3"
 scipy = "1.12.0"
-torch = {version = "2.1.2", source = "pypi"}
+symengine = { version = "0.11.0", markers = "sys_platform != 'win32'" }
+torch = { version = ">=2.2,<2.3", python = "<3.12" }
+
 [tool.poetry.group.mpi]
 optional = true
 
 [tool.poetry.group.mpi.dependencies]
-mpi4py = "^3.1.5"
+mpi4py = { version = "^3.1.4", optional = true }
+qiskit-algorithms = { version = "^0.3.1", optional = true }
+
+[tool.poetry.extras]
+mpi = ["mpi4py", "qiskit-algorithms"]
 qutip = "^5.1.1"
 cupy-cuda12x = "^13.3.0"
 h5py = "^3.12.1"

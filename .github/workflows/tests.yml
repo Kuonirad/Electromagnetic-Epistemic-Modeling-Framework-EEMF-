@@ -15,10 +15,14 @@ jobs:
       - name: Install system dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y libopenmpi-dev python3-dev cmake libgmp-dev \
-            build-essential gcc g++ gfortran make \
-            libmpfr-dev libmpc-dev libblas-dev liblapack-dev \
-            python3-symengine python3-sympy
+          sudo apt-get install -y \
+            libopenmpi-dev \
+            libsymengine-dev \
+            python3-dev \
+            cmake \
+            build-essential \
+            gcc g++ gfortran make \
+            libmpfr-dev libmpc-dev libblas-dev liblapack-dev
 
       - name: Set up Python
         uses: actions/setup-python@v4
