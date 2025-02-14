@@ -8,9 +8,8 @@ on:
 
 jobs:
   test:
+    name: Test and Lint
     runs-on: ubuntu-latest
-    env:
-      PYTHON_VERSION: 3.11.7
     steps:
       - uses: actions/checkout@v3
 
@@ -22,10 +21,10 @@ jobs:
             build-essential gcc g++ gfortran make \
             libmpfr-dev libmpc-dev libblas-dev liblapack-dev
 
-      - name: Set up Python
+      - name: Set up Python 3.11.7
         uses: actions/setup-python@v4
         with:
-          python-version: ${{ env.PYTHON_VERSION }}
+          python-version: '3.11.7'
 
       - name: Verify Python version
         run: |
@@ -33,10 +32,11 @@ jobs:
           python -c "import sys; assert sys.version_info[:2] == (3, 11), 'Python 3.11 is required'"
 
       - name: Install Poetry
-        run: |
-          python -m pip install --upgrade pip
-          python -m pip install poetry==1.7.1
-          poetry --version
+        uses: snok/install-poetry@v1
+        with:
+          version: 1.7.1
+          virtualenvs-create: true
+          virtualenvs-in-project: true
 
       - name: Configure Poetry
         run: |
