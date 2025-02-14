@@ -7,6 +7,10 @@ on:
     branches: [ main ]
 
 jobs:
+  lint:
+    name: Lint
+    runs-on: ubuntu-latest
+
   test:
     name: Test
     runs-on: ubuntu-latest
@@ -39,9 +43,9 @@ jobs:
       - name: Install dependencies
         run: |
           python -m pip install --upgrade "pip==23.3.1" "setuptools==69.0.3" wheel
-          poetry env use $(which python3)
+          poetry config virtualenvs.create false
           poetry install --with mpi --extras mpi --no-interaction --no-ansi --no-cache
-          poetry env info
+          python -V
 
       - name: Run tests
         run: |
