@@ -1,7 +1,7 @@
 """Maxwell eigenvalue problem to quantum circuit mapper."""
 
-from dataclasses import dataclass
-from typing import Dict, List
+from dataclasses import dataclass, field
+from typing import Any, Dict, List
 
 import numpy as np
 from qiskit import QuantumCircuit, QuantumRegister, transpile
@@ -9,6 +9,8 @@ from qiskit.circuit.library import PauliEvolutionGate
 from qiskit.opflow import I, X, Y, Z
 from qiskit.transpiler import CouplingMap
 from qiskit_nature.second_q.operators import FermiOp
+
+from .error_mitigation import apply_zne
 
 
 @dataclass
@@ -20,6 +22,11 @@ class CircuitConfig:
     architecture: str = "superconducting"
     error_mitigation: bool = True
     rs_compression: bool = True  # Riemann-Silberstein vector compression
+    zne_config: Dict[str, Any] = field(default_factory=lambda: {
+        'scale_factors': [1, 2, 3],
+        'extrapolation_method': 'linear',
+        'noise_amplifier': 'folding'
+    })
 
 
 class MaxwellCircuitMapper:
@@ -53,10 +60,11 @@ class MaxwellCircuitMapper:
     def _hardware_optimize(
         self, circ: QuantumCircuit, hw_config
     ) -> QuantumCircuit:
-        """Apply architecture-specific optimizations."""
+        """Apply architecture-specific optimizations with error mitigation."""
+        # Apply base optimizations
         if hw_config.architecture == "superconducting":
             # Use LightSabre-inspired layout optimization
-            return transpile(
+            optimized = transpile(
                 circ,
                 coupling_map=CouplingMap(hw_config.connectivity),
                 routing_method="sabre",
@@ -64,10 +72,25 @@ class MaxwellCircuitMapper:
             )
         elif hw_config.architecture == "trapped_ion":
             # Implement all-to-all connectivity optimization
-            return transpile(
+            optimized = transpile(
                 circ, coupling_map=None, basis_gates=["rxx", "rz", "ry"]
             )
-        return circ
+        else:
+            optimized = circ
+            
+        # Apply error mitigation if enabled
+        if self.config.error_mitigation:
+            mitigated, error_bound = apply_zne(
+                optimized,
+                self.config.zne_config
+            )
+            # Store error metrics
+            self._error_metrics = {
+                'mitigated_value': mitigated,
+                'error_bound': error_bound
+            }
+        
+        return optimized
 
     def map_cavity_modes(
         self, dimensions: List[float], boundary_conditions: Dict[str, str]

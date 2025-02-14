@@ -5,6 +5,7 @@ import pytest
 from qiskit import QuantumCircuit
 
 from em_sim.quantum.circuit_mapper import CircuitConfig, MaxwellCircuitMapper
+from em_sim.quantum.error_mitigation import compute_error_bounds
 from em_sim.quantum.hardware_config import HardwareConfig
 
 
@@ -68,3 +69,39 @@ def test_hardware_optimization(circuit_mapper):
     hw_config = HardwareConfig.create_trapped_ion()
     optimized = circuit_mapper._hardware_optimize(circuit, hw_config)
     assert isinstance(optimized, QuantumCircuit)
+
+
+def test_zne_error_mitigation():
+    """Test Zero-Noise Extrapolation error mitigation."""
+    config = CircuitConfig(
+        qubit_count=2,
+        error_mitigation=True,
+        zne_config={'scale_factors': [1, 2, 3]}
+    )
+    mapper = MaxwellCircuitMapper(config)
+    
+    # Create test circuit
+    circuit = QuantumCircuit(2)
+    circuit.h(0)
+    circuit.cx(0, 1)
+    
+    # Apply optimization with ZNE
+    optimized = mapper._hardware_optimize(
+        circuit,
+        HardwareConfig.create_superconducting()
+    )
+    
+    # Verify error metrics
+    assert hasattr(mapper, '_error_metrics')
+    assert 'mitigated_value' in mapper._error_metrics
+    assert 'error_bound' in mapper._error_metrics
+    assert mapper._error_metrics['error_bound'] > 0
+
+
+def test_error_bound_calculation():
+    """Test error bound computation."""
+    scales = [1, 2, 3]
+    results = [0.95, 0.85, 0.75]
+    error_bound = compute_error_bounds(scales, results)
+    assert error_bound > 0
+    assert error_bound < 1.0  # Reasonable bound for test data

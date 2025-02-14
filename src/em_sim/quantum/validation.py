@@ -1,6 +1,6 @@
 """Validation utilities for quantum circuits."""
 
-from typing import Dict
+from typing import Dict, Union
 
 import numpy as np
 from qiskit import QuantumCircuit
@@ -63,3 +63,29 @@ def compute_error_bounds(results: Dict[str, np.ndarray]) -> Dict[str, float]:
         error_metrics["v_score"] = v_score
 
     return error_metrics
+
+
+def validate_error_mitigation(
+    circuit: QuantumCircuit,
+    mitigated_value: float,
+    error_bound: float
+) -> bool:
+    """Validate error mitigation results.
+    
+    Args:
+        circuit: Original quantum circuit
+        mitigated_value: Value after error mitigation
+        error_bound: Computed error bound
+        
+    Returns:
+        True if error mitigation results are valid
+    """
+    # Verify error bound is reasonable
+    if error_bound <= 0 or error_bound >= 1.0:
+        return False
+        
+    # Verify mitigated value is within physical bounds
+    if abs(mitigated_value) > 1.0:
+        return False
+        
+    return True
