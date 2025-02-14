@@ -45,7 +45,9 @@ jobs:
           python -m pip install --upgrade "pip==23.3.1" "setuptools==69.0.3" wheel
           poetry config virtualenvs.in-project true
           poetry config installer.max-workers 4
+          poetry env use ${{ matrix.python-version }}
           poetry install --with mpi --extras mpi --no-interaction --no-cache
+          poetry show
 
       - name: Run tests
         run: |
