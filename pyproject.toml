@@ -24,8 +24,12 @@ torch = { version = ">=2.2,<2.3", python = "<3.12" }
 matplotlib = "^3.8.2"
 pyquil = { version = ">=4.8.1,<5.0" }
 qiskit = { version = ">=1.0.0,<1.1", extras = ["all"] }  # Include all qiskit extras
-h5py = { version = ">=3.11.0", markers = "sys_platform != 'win32'" }
-mpi4py = { version = "^3.1.5", markers = "sys_platform != 'win32'" }
+h5py = { version = ">=3.11.0" }  # Required for FDTD solver
+mpi4py = { version = "^3.1.5" }  # Required for field solver
+qiskit-terra = { version = ">=0.46.2,<0.47" }
+qiskit-nature = { version = "^0.7.2" }
+qiskit-aer = { version = "0.12.0" }
+qiskit-algorithms = { version = "0.3.1" }
 
 [tool.poetry.group.mpi]
 optional = true
@@ -33,10 +37,6 @@ optional = true
 [tool.poetry.group.mpi.dependencies]
 qutip = { version = "^5.1.1" }
 cupy-cuda12x = { version = "^13.3.0" }
-qiskit-terra = { version = ">=0.46.2,<0.47" }
-qiskit-nature = { version = "^0.7.2" }
-qiskit-aer = { version = "0.12.0" }
-qiskit-algorithms = { version = "0.3.1" }
 
 [tool.poetry.extras]
 mpi = ["mpi4py", "qutip", "cupy-cuda12x", "h5py", "qiskit", "qiskit-terra", "qiskit-nature", "qiskit-aer", "qiskit-algorithms"]
