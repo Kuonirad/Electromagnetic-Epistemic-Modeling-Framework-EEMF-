@@ -9,9 +9,6 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest
-    env:
-      PYTHON_VERSION: "3.11.7"
-      POETRY_VERSION: "1.7.1"
     steps:
       - uses: actions/checkout@v3
 
@@ -23,31 +20,25 @@ jobs:
             build-essential gcc g++ gfortran make \
             libmpfr-dev libmpc-dev libblas-dev liblapack-dev
 
-      - name: Set up Python ${{ env.PYTHON_VERSION }}
+      - name: Set up Python
         uses: actions/setup-python@v4
         with:
-          python-version: ${{ env.PYTHON_VERSION }}
+          python-version: '3.11.7'
 
-      - name: Install Poetry ${{ env.POETRY_VERSION }}
+      - name: Install Poetry
         run: |
-          python -m pip install --upgrade pip setuptools wheel
-          python -m pip install "poetry==${{ env.POETRY_VERSION }}"
-          poetry config virtualenvs.create false
-          poetry config virtualenvs.in-project false
-          poetry config installer.parallel false
+          python -m pip install --upgrade pip
+          python -m pip install poetry==1.7.1
+          poetry --version
 
       - name: Install dependencies
         run: |
-          poetry env use $(which python)
+          poetry env use python
           poetry install --with mpi --extras mpi --no-interaction
 
-      - name: Run tests
+      - name: Run tests and checks
         run: |
           poetry run pytest
-
-      - name: Run linting
-        if: success()
-        run: |
           poetry run black . --check
           poetry run isort . --check
           poetry run flake8 .
