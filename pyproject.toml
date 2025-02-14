@@ -1,3 +1,12 @@
+[[tool.poetry.source]]
+name = "PyPI"
+priority = "primary"
+
+[[tool.poetry.source]]
+name = "pytorch"
+url = "https://download.pytorch.org/whl/cpu"
+priority = "supplemental"
+
 [tool.poetry]
 name = "em-sim"
 version = "0.1.0"
@@ -7,18 +16,29 @@ license = "MIT"
 readme = "README.md"
 
 [tool.poetry.dependencies]
-python = "^3.12"
-numpy = "1.24.3"
-scipy = "1.11.3"
-torch = "2.0.1"
-qutip = "^5.1.1"
-cupy-cuda12x = "^13.3.0"
-h5py = "^3.12.1"
-qiskit = "0.45.0"
-qiskit-nature = "0.6.0"
-qiskit-aer = "0.12.0"
-mpi4py = "^3.1.5"
+python = "^3.11"
+numpy = "1.26.3"
+scipy = "1.12.0"
+symengine = "^0.11.0"
+torch = { version = ">=2.2,<2.3", python = "<3.12" }
 matplotlib = "^3.8.2"
+
+[tool.poetry.group.mpi]
+optional = true
+
+[tool.poetry.group.mpi.dependencies]
+mpi4py = { version = "^3.1.4" }
+qutip = { version = "^5.1.1" }
+cupy-cuda12x = { version = "^13.3.0" }
+h5py = { version = "^3.12.1" }
+qiskit = { version = "0.45.0" }
+qiskit-terra = { version = ">=0.46.2,<0.47" }
+qiskit-nature = { version = "^0.7.2" }
+qiskit-aer = { version = "0.12.0" }
+qiskit-algorithms = { version = "0.3.1" }
+
+[tool.poetry.extras]
+mpi = ["mpi4py", "qutip", "cupy-cuda12x", "h5py", "qiskit", "qiskit-terra", "qiskit-nature", "qiskit-aer", "qiskit-algorithms"]
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^8.3.4"
