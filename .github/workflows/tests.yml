@@ -15,24 +15,15 @@ jobs:
       - name: Install system dependencies
         run: |
           sudo apt-get update
+          sudo apt-get install -y software-properties-common
+          sudo add-apt-repository universe
+          sudo add-apt-repository 'deb http://archive.ubuntu.com/ubuntu/ noble-backports main restricted universe multiverse'
+          sudo apt-get update
           sudo apt-get install -y \
-            libopenmpi-dev \
-            python3-dev \
-            cmake \
-            build-essential \
-            gcc g++ gfortran make \
+            libopenmpi-dev python3-dev cmake libgmp-dev \
+            build-essential gcc g++ gfortran make \
             libmpfr-dev libmpc-dev libblas-dev liblapack-dev \
-            libgmp-dev
-
-      - name: Build and install SymEngine
-        run: |
-          git clone https://github.com/symengine/symengine.git
-          cd symengine
-          mkdir build && cd build
-          cmake -DCMAKE_BUILD_TYPE=Release -DWITH_SYMENGINE_THREAD_SAFE=ON ..
-          make -j$(nproc)
-          sudo make install
-          sudo ldconfig
+            python3-symengine
 
       - name: Set up Python
         uses: actions/setup-python@v4
