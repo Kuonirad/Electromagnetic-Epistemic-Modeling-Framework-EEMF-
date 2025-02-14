@@ -30,15 +30,20 @@ jobs:
           poetry config virtualenvs.create false
           poetry config virtualenvs.in-project false
           poetry config installer.parallel false
+          poetry config experimental.system-git-client true
 
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip setuptools wheel
           poetry install --with mpi --extras mpi --no-interaction
 
-      - name: Run tests and checks
+      - name: Run tests
         run: |
           poetry run pytest
+
+      - name: Run linting
+        if: success()
+        run: |
           poetry run black . --check
           poetry run isort . --check
           poetry run flake8 .
