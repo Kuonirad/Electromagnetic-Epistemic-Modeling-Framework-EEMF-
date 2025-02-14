@@ -32,11 +32,11 @@ qiskit-nature = { version = "^0.7.2", optional = true }
 qiskit-aer = { version = "0.12.0", optional = true }
 qiskit-algorithms = { version = "0.3.1", optional = true }
 
-[tool.poetry.dependencies]
-matplotlib = "^3.8.2"
-
 [tool.poetry.extras]
 mpi = ["mpi4py", "cupy-cuda12x", "h5py", "qiskit", "qiskit-terra", "qiskit-nature", "qiskit-aer", "qiskit-algorithms"]
+
+[tool.poetry.group.main.dependencies]
+matplotlib = "^3.8.2"
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^8.3.4"
