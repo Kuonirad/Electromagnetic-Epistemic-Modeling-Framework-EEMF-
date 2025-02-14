@@ -1,0 +1,28 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: em-sim
+spec:
+  template:
+    spec:
+      containers:
+      - name: em-sim
+        image: em-sim-gpu:latest
+        resources:
+          limits:
+            nvidia.com/gpu: 2
+            memory: "16Gi"
+          requests:
+            nvidia.com/gpu: 1
+            memory: "8Gi"
+        env:
+        - name: CUDA_VISIBLE_DEVICES
+          value: "all"
+        volumeMounts:
+        - name: data
+          mountPath: /data
+      volumes:
+      - name: data
+        persistentVolumeClaim:
+          claimName: em-sim-data
+      restartPolicy: Never
