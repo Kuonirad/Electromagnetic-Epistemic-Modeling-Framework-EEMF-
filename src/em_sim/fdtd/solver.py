@@ -8,10 +8,13 @@ Provides support for:
 """
 
 from dataclasses import dataclass
-from typing import Optional, Tuple
+from pathlib import Path
+from typing import Optional, Tuple, Union
 
 import matplotlib.pyplot as plt
 import numpy as np
+
+from . import output
 
 
 @dataclass
@@ -101,17 +104,77 @@ class FDTD1DSolver:
         """Return current electric and magnetic field data."""
         return self.Ex.copy(), np.append(self.Hy, 0)
 
-    def save_field_data(self, filename: str) -> None:
-        """Save the current field data to a file."""
+    def save_field_data(
+        self,
+        filename: str,
+        output_format: str = "txt",
+        precision: int = 6,
+        output_dir: Union[str, Path] = ".",
+    ) -> str:
+        """Save the current field data to a file.
+
+        Args:
+            filename: Base filename without extension
+            output_format: One of 'txt', 'csv', 'hdf5', or 'npz'
+            precision: Number of decimal places for text output
+            output_dir: Directory to save output files
+
+        Returns:
+            Path to the saved file
+
+        Raises:
+            ValueError: If output_format is not one of: txt, csv, hdf5, npz
+            OSError: If there are issues creating output directory or writing
+                files
+        """
+        if output_format not in ["txt", "csv", "hdf5", "npz"]:
+            raise ValueError(
+                "Unsupported output format: "
+                f"{output_format}. Supported formats: txt, csv, hdf5, npz"
+            )
+
         Ex, Hy = self.get_field_data()
-        np.savetxt(
-            filename, np.column_stack((Ex, Hy)), header="Ex Hy", comments=""
+        data = np.column_stack((Ex, Hy))
+        params = self.params
+        metadata = output.create_metadata(params, params.dx, params.dt)
+
+        return output.save_results(
+            data=data,
+            metadata=metadata,
+            output_format=output_format,
+            precision=precision,
+            base_name=filename,
+            output_dir=output_dir,
         )
 
     def run_simulation(
-        self, visualize: bool = True, save_output: bool = True
-    ) -> None:
-        """Run the complete FDTD simulation."""
+        self,
+        visualize: bool = True,
+        save_output: bool = True,
+        output_format: str = "txt",
+        precision: int = 6,
+    ) -> Optional[str]:
+        """Run the complete FDTD simulation.
+
+        Args:
+            visualize: Whether to show real-time visualization
+            save_output: Whether to save simulation results
+            output_format: One of 'txt', 'csv', 'hdf5', or 'npz'
+            precision: Number of decimal places for text output
+
+        Returns:
+            Path to the output file if save_output is True
+
+        Raises:
+            ValueError: If output_format is not one of: txt, csv, hdf5, npz
+            OSError: If there are issues saving output files to disk
+        """
+        if save_output and output_format not in ["txt", "csv", "hdf5", "npz"]:
+            raise ValueError(
+                "Unsupported output format: "
+                f"{output_format}. Supported formats: txt, csv, hdf5, npz"
+            )
+
         if visualize:
             self.setup_visualization()
 
@@ -124,4 +187,7 @@ class FDTD1DSolver:
                 self.update_visualization()
 
         if save_output:
-            self.save_field_data("fdtd_output.txt")
+            return self.save_field_data(
+                "fdtd_output", output_format=output_format, precision=precision
+            )
+        return None
