@@ -48,7 +48,7 @@ jobs:
 
       - name: Install dependencies
         run: |
-          poetry install --with mpi --extras mpi --no-interaction \
+          poetry install --with mpi --extras mpi --all-extras --no-interaction \
             --no-ansi --sync
         env:
           PYTHON_VERSION: "3.11.7"
