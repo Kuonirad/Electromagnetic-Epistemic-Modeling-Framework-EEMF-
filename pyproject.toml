@@ -23,7 +23,9 @@ qiskit-aer = { version = ">=0.13.0,<0.15.0", extras = ["mpi"] }  # Required for 
 
 [tool.poetry.group.quantum]
 optional = true
-dependencies = { pyquil = { version = ">=4.8.1,<5.0", extras = [] } }
+dependencies = {
+    "pyquil" = { version = ">=4.8.1,<5.0", extras = [] }
+}
 
 [tool.poetry.group.dev]
 optional = true
