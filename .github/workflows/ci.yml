@@ -1,24 +1,34 @@
-name: CI
+name: Quantum CI
 
-on:
-  push:
-    branches: [ main ]
-  pull_request:
-    branches: [ main ]
+on: [push, pull_request]
 
 jobs:
-  test:
-    runs-on: ubuntu-latest
+  quantum-simulation:
+    runs-on: ubuntu-24.04
     env:
       PYTHON_VERSION: "3.11.7"
-
+      
     steps:
-    - uses: actions/checkout@v4
-    - name: Set up Python
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Install System Dependencies
+      run: |
+        sudo apt-get update && sudo apt-get install -y \
+          build-essential \
+          cmake \
+          ninja-build \
+          gfortran \
+          libopenmpi-dev \
+          openmpi-bin \
+          libblas-dev \
+          liblapack-dev \
+          libgmp-dev
+
+    - name: Set Up Python ${{ env.PYTHON_VERSION }}
       uses: actions/setup-python@v4
       with:
         python-version: ${{ env.PYTHON_VERSION }}
-        architecture: 'x64'
         cache: 'pip'
 
     - name: Install Poetry
@@ -32,114 +42,43 @@ jobs:
         poetry env use ${{ env.pythonLocation }}/bin/python
         poetry config virtualenvs.in-project true
 
-    - name: Install system dependencies
-      run: |
-        sudo apt-get update
-        sudo apt-get install -y \
-          libopenmpi-dev \
-          openmpi-common \
-          ocl-icd-opencl-dev \
-          libblas64-dev \
-          libfftw3-dev \
-          libgsl-dev \
-          openmpi-bin
-        sudo ldconfig  # Refresh library paths
-      env:
-        DEBIAN_FRONTEND: noninteractive
-
     - name: Configure MPI Environment
       run: |
-        echo "OMPI_DIR=/usr/lib/x86_64-linux-gnu/openmpi" >> $GITHUB_ENV
         echo "MPICC=$(which mpicc)" >> $GITHUB_ENV
-        echo "CFLAGS=-I$OMPI_DIR/include" >> $GITHUB_ENV
-        echo "LDFLAGS=-L$OMPI_DIR/lib -lmpi" >> $GITHUB_ENV
-        echo "OMPI_MCA_btl=^vader" >> $GITHUB_ENV  # Disable shared memory bypass
-
-    - name: Install dependencies
-      run: |
-        MPICC=$(which mpicc) poetry install --with mpi,quantum,dev --extras mpi -v
-      env:
-        OMPI_DIR: "/usr/lib/x86_64-linux-gnu/openmpi"
-        C_INCLUDE_PATH: "/usr/lib/x86_64-linux-gnu/openmpi/include"
-        LIBRARY_PATH: "/usr/lib/x86_64-linux-gnu/openmpi/lib"
-
-    - name: Validate MPI
-      run: |
-        mpirun --version
-        poetry run python -c "from mpi4py import MPI; print(f'MPI {MPI.Get_version()}.{MPI.Get_subversion()} detected')"
-
-    - name: Test Qiskit-AER MPI Support
-      run: |
-        poetry run python -c "from qiskit_aer import Aer; \
-        print('MPI Backends:', Aer.backends(name='statevector', method='matrix_product_state'))"
-
-    - name: Run tests with coverage
-      run: poetry run pytest --cov=src/em_sim --cov-report=xml
-
-    - name: Upload coverage to Codecov
-      uses: codecov/codecov-action@v3
-      with:
-        file: ./coverage.xml
-        fail_ci_if_error: true
-
-  lint:
-    runs-on: ubuntu-latest
-    env:
-      PYTHON_VERSION: "3.11.7"
-
-    steps:
-    - uses: actions/checkout@v4
-    - name: Set up Python
-      uses: actions/setup-python@v4
-      with:
-        python-version: ${{ env.PYTHON_VERSION }}
-        architecture: 'x64'
-        cache: 'pip'
-
-    - name: Install Poetry
-      run: |
-        python -m pip install --upgrade pip
-        python -m pip install pipx
-        pipx install poetry==1.7.1
-
-    - name: Configure Poetry
-      run: |
-        poetry env use ${{ env.pythonLocation }}/bin/python
-        poetry config virtualenvs.in-project true
-
-    - name: Install system dependencies
-      run: |
-        sudo apt-get update
-        sudo apt-get install -y \
-          libopenmpi-dev \
-          openmpi-common \
-          ocl-icd-opencl-dev \
-          libblas64-dev \
-          libfftw3-dev \
-          libgsl-dev \
-          openmpi-bin
-        sudo ldconfig  # Refresh library paths
-      env:
-        DEBIAN_FRONTEND: noninteractive
-
-    - name: Configure MPI Environment
-      run: |
         echo "OMPI_DIR=/usr/lib/x86_64-linux-gnu/openmpi" >> $GITHUB_ENV
-        echo "MPICC=$(which mpicc)" >> $GITHUB_ENV
-        echo "CFLAGS=-I$OMPI_DIR/include" >> $GITHUB_ENV
-        echo "LDFLAGS=-L$OMPI_DIR/lib -lmpi" >> $GITHUB_ENV
-        echo "OMPI_MCA_btl=^vader" >> $GITHUB_ENV  # Disable shared memory bypass
+        echo "C_INCLUDE_PATH=/usr/include/openmpi" >> $GITHUB_ENV
+        echo "LIBRARY_PATH=/usr/lib/x86_64-linux-gnu/openmpi/lib" >> $GITHUB_ENV
+        echo "CFLAGS=-I/usr/include/openmpi" >> $GITHUB_ENV
+        echo "LDFLAGS=-L/usr/lib/x86_64-linux-gnu/openmpi/lib -lmpi" >> $GITHUB_ENV
 
-    - name: Install dependencies
+    - name: Install Dependencies
       run: |
-        MPICC=$(which mpicc) poetry install --with mpi,quantum,dev --extras mpi -v
-      env:
-        OMPI_DIR: "/usr/lib/x86_64-linux-gnu/openmpi"
-        C_INCLUDE_PATH: "/usr/lib/x86_64-linux-gnu/openmpi/include"
-        LIBRARY_PATH: "/usr/lib/x86_64-linux-gnu/openmpi/lib"
+        export MPICC=$(which mpicc)
+        export OMPI_DIR=/usr/lib/x86_64-linux-gnu/openmpi
+        export C_INCLUDE_PATH=/usr/include/openmpi
+        export LIBRARY_PATH=/usr/lib/x86_64-linux-gnu/openmpi/lib
+        export CFLAGS="-I/usr/include/openmpi"
+        export LDFLAGS="-L/usr/lib/x86_64-linux-gnu/openmpi/lib -lmpi"
+        poetry config installer.max-workers 4
+        poetry install --with mpi,quantum,dev,test,lint --extras mpi -v --no-interaction
 
-    - name: Run linters
+    - name: Run Linters
       run: |
         poetry run black --check .
         poetry run isort --check-only .
         poetry run flake8 .
+
+    - name: Run Quantum Validation
+      run: |
+        mpirun --version
+        poetry run python -c "from mpi4py import MPI; print(f'MPI {MPI.Get_library_version()} initialized')"
+        poetry run python -c "from qiskit_aer import Aer; print('Available backends:', Aer.backends())"
+
+    - name: Run Tests
+      run: poetry run pytest --cov=src/em_sim --cov-report=xml
+
+    - name: Upload Coverage
+      uses: codecov/codecov-action@v3
+      with:
+        file: ./coverage.xml
+        fail_ci_if_error: true

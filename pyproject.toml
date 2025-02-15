@@ -31,7 +31,8 @@ qiskit-algorithms = "0.3.1"  # Match Qiskit 1.0.x requirements
 optional = true
 
 [tool.poetry.group.quantum.dependencies]
-pyquil = { version = ">=4.8.1,<5.0", extras = [] }
+qiskit = "1.0.0"
+qiskit-aer = {version = "0.13.0", extras = ["mpi"]}
 
 [tool.poetry.group.dev]
 optional = true
