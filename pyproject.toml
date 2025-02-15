@@ -2,11 +2,6 @@
 name = "PyPI"
 priority = "primary"
 
-[[tool.poetry.source]]
-name = "pytorch"
-url = "https://download.pytorch.org/whl/cpu"
-priority = "supplemental"
-
 [tool.poetry]
 name = "em-sim"
 version = "0.1.0"
@@ -20,16 +15,25 @@ python = "^3.11"
 numpy = "1.26.3"
 scipy = "1.12.0"
 symengine = "^0.11.0"
-torch = { version = ">=2.2,<2.3", python = "<3.12" }
+torch = { version = ">=2.2,<2.3", python = "<3.12" }  # CPU-only version
 matplotlib = "^3.8.2"
 pyquil = { version = ">=4.8.1,<5.0" }
-qiskit = { version = ">=1.0.0,<1.1", extras = ["all"] }  # Include all qiskit extras
-h5py = { version = ">=3.11.0" }  # Required for FDTD solver
-mpi4py = { version = "^3.1.5" }  # Required for field solver
-qiskit-terra = { version = ">=0.46.2,<0.47" }
-qiskit-nature = { version = "^0.7.2" }
-qiskit-aer = { version = "0.12.0" }
-qiskit-algorithms = { version = "0.3.1" }
+qiskit = { version = ">=1.0.0,<1.1", extras = ["all"] }  # Core Qiskit package with all extras
+qiskit-aer = { version = ">=0.13.0,<0.15.0", extras = ["mpi"] }  # Required for quantum simulation with MPI support
+qiskit-algorithms = { version = ">=0.3.1,<0.4.0" }  # Required for VQE and other quantum algorithms
+
+[tool.poetry.group.quantum]
+optional = true
+dependencies = {
+    "pyquil" = { version = ">=4.8.1,<5.0", extras = [] }
+}
+
+[tool.poetry.group.dev]
+optional = true
+dependencies = {
+    "h5py" = ">=3.11.0",  # Required for FDTD solver
+    "mpi4py" = "^3.1.5"  # Required for field solver
+}
 
 [tool.poetry.group.mpi]
 optional = true
@@ -70,3 +74,15 @@ exclude = '''
   | dist
 )/
 '''
+
+[tool.isort]
+profile = "black"
+line_length = 120  # Match black's line length
+multi_line_output = 3
+include_trailing_comma = true
+force_grid_wrap = 0
+use_parentheses = true
+ensure_newline_before_comments = true
+skip_glob = ["**/venv/**", "**/.venv/**", "**/build/**", "**/dist/**"]
+known_first_party = ["em_sim"]
+sections = ["FUTURE", "STDLIB", "THIRDPARTY", "FIRSTPARTY", "LOCALFOLDER"]

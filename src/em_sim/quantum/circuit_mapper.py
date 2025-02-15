@@ -4,7 +4,8 @@ from dataclasses import dataclass, field
 from typing import Any, Dict, List
 
 import numpy as np
-from qiskit import QuantumCircuit, QuantumRegister, transpile
+from qiskit import QuantumCircuit, QuantumRegister
+from qiskit.transpiler import transpile
 from qiskit.circuit.library import PauliEvolutionGate
 from qiskit.quantum_info import SparsePauliOp
 from qiskit.transpiler import CouplingMap
@@ -76,11 +77,13 @@ class MaxwellCircuitMapper:
         # Apply base optimizations
         if hw_config.architecture == "superconducting":
             # Convert connectivity map to edge list for CouplingMap
-            edges = [
-                (k, v)
-                for k, adj in hw_config.connectivity_map.items()
-                for v in adj
-            ]
+            edges = []
+            if hasattr(hw_config, 'connectivity_map'):
+                edges = [
+                    (k, v)
+                    for k, adj in hw_config.connectivity_map.items()
+                    for v in adj
+                ]
             # Use LightSabre-inspired layout optimization
             optimized = transpile(
                 circ,

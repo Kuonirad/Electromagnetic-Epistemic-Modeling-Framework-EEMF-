@@ -23,7 +23,7 @@ class ConsciousnessIntegrator:
         """
         self.field_strength = field_strength
         self.coherence_time = coherence_time
-        self.device = device
+        self.device = "cuda" if device == "cuda" and torch.cuda.is_available() else "cpu"
 
     def compute_coupling_field(
         self,
