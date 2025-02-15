@@ -4,9 +4,9 @@ from typing import Dict, List, Tuple
 
 import numpy as np
 from qiskit import QuantumCircuit
+from qiskit.primitives import Sampler
 from qiskit_aer import AerSimulator
 from qiskit_aer.noise import NoiseModel, QuantumError
-from qiskit.primitives import Sampler
 from scipy import stats
 
 
