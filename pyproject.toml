@@ -24,6 +24,7 @@ torch = { version = ">=2.2,<2.3", python = "<3.12", source = "pypi", extras = ["
 matplotlib = "^3.8.2"
 pyquil = { version = ">=4.8.1,<5.0" }
 qiskit = { version = ">=1.0.0,<1.1", extras = ["algorithms", "aer"] }  # Core Qiskit package with algorithms and simulation
+qiskit-algorithms = { version = ">=0.3.1" }  # Required for VQE and SPSA
 h5py = { version = ">=3.11.0" }  # Required for FDTD solver
 mpi4py = { version = "^3.1.5" }  # Required for field solver
 
