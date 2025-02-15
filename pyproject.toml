@@ -2,6 +2,11 @@
 name = "PyPI"
 priority = "primary"
 
+[[tool.poetry.source]]
+name = "pytorch"
+url = "https://download.pytorch.org/whl/cpu"
+priority = "explicit"  # Override PyPI for Torch
+
 [tool.poetry]
 name = "em-sim"
 version = "0.1.0"
@@ -18,9 +23,9 @@ symengine = "^0.11.0"
 torch = { version = ">=2.2,<2.3", python = "<3.12" }  # CPU-only version
 matplotlib = "^3.8.2"
 pyquil = { version = ">=4.8.1,<5.0" }
-qiskit = { version = ">=1.0.0,<1.1", extras = ["all"] }  # Core Qiskit package with all extras
-qiskit-aer = { version = ">=0.13.0,<0.15.0", extras = ["mpi"] }  # Required for quantum simulation with MPI support
-qiskit-algorithms = { version = ">=0.3.1,<0.4.0" }  # Required for VQE and other quantum algorithms
+qiskit-terra = "0.46.2"  # Critical for MPI compatibility
+qiskit-aer = { version = "0.13.0", extras = ["mpi"] }  # Required for quantum simulation with MPI support
+qiskit-algorithms = "0.3.1"  # Match Qiskit 1.0.x requirements
 
 [tool.poetry.group.quantum]
 optional = true
@@ -32,7 +37,7 @@ dependencies = {
 optional = true
 dependencies = {
     "h5py" = ">=3.11.0",  # Required for FDTD solver
-    "mpi4py" = "^3.1.5"  # Required for field solver
+    "mpi4py" = { version = "3.1.5", markers = "sys_platform != 'win32'" }  # Required for field solver
 }
 
 [tool.poetry.group.mpi]
