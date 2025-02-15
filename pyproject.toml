@@ -28,8 +28,8 @@ dependencies = { pyquil = { version = ">=4.8.1,<5.0", extras = [] } }
 [tool.poetry.group.dev]
 optional = true
 dependencies = { 
-    h5py = { version = ">=3.11.0" },  # Required for FDTD solver
-    mpi4py = { version = "^3.1.5" }  # Required for field solver
+    "h5py" = { version = ">=3.11.0" },  # Required for FDTD solver
+    "mpi4py" = { version = "^3.1.5" }  # Required for field solver
 }
 
 [tool.poetry.group.mpi]
