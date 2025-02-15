@@ -42,11 +42,11 @@ jobs:
 
     - name: Install dependencies
       run: |
-        MPICC=$(which mpicc) poetry install --with mpi --extras mpi -v
+        MPICC=$(which mpicc) poetry install --with mpi,quantum,dev --extras mpi -v
       env:
         OMPI_DIR: "/usr/lib/x86_64-linux-gnu/openmpi"
-        C_INCLUDE_PATH: "${{ env.OMPI_DIR }}/include"
-        LIBRARY_PATH: "${{ env.OMPI_DIR }}/lib"
+        C_INCLUDE_PATH: "/usr/lib/x86_64-linux-gnu/openmpi/include"
+        LIBRARY_PATH: "/usr/lib/x86_64-linux-gnu/openmpi/lib"
 
     - name: Validate MPI
       run: |
@@ -97,11 +97,11 @@ jobs:
 
     - name: Install dependencies
       run: |
-        MPICC=$(which mpicc) poetry install --with mpi --extras mpi -v
+        MPICC=$(which mpicc) poetry install --with mpi,quantum,dev --extras mpi -v
       env:
         OMPI_DIR: "/usr/lib/x86_64-linux-gnu/openmpi"
-        C_INCLUDE_PATH: "${{ env.OMPI_DIR }}/include"
-        LIBRARY_PATH: "${{ env.OMPI_DIR }}/lib"
+        C_INCLUDE_PATH: "/usr/lib/x86_64-linux-gnu/openmpi/include"
+        LIBRARY_PATH: "/usr/lib/x86_64-linux-gnu/openmpi/lib"
 
     - name: Run linters
       run: |
