@@ -7,7 +7,7 @@ from qiskit import QuantumCircuit
 from qiskit.circuit.library import EfficientSU2
 from qiskit.primitives import Estimator
 from qiskit.quantum_info import SparsePauliOp
-from qiskit.algorithms.minimum_eigensolvers import VQE
+from qiskit.algorithms.minimum_eigensolvers import VQE, VQEResult
 from qiskit.algorithms.optimizers import SPSA
 # Already imported above
 
@@ -59,4 +59,5 @@ class MaxwellEigenvalueSolver:
         eigenvectors = np.array(
             [result.optimal_point]
         )  # Make it 2D array with shape (1, n)
-        return eigenvalues, eigenvectors
+        result = vqe.compute_minimum_eigenvalue(hamiltonian)
+        return result.eigenvalue.real, result.optimal_point
