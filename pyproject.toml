@@ -29,16 +29,16 @@ qiskit-algorithms = "0.3.1"  # Match Qiskit 1.0.x requirements
 
 [tool.poetry.group.quantum]
 optional = true
-dependencies = {
-    "pyquil" = { version = ">=4.8.1,<5.0", extras = [] }
-}
+
+[tool.poetry.group.quantum.dependencies]
+pyquil = { version = ">=4.8.1,<5.0", extras = [] }
 
 [tool.poetry.group.dev]
 optional = true
-dependencies = {
-    "h5py" = ">=3.11.0",  # Required for FDTD solver
-    "mpi4py" = { version = "3.1.5", markers = "sys_platform != 'win32'" }  # Required for field solver
-}
+
+[tool.poetry.group.dev.dependencies]
+h5py = ">=3.11.0"  # Required for FDTD solver
+mpi4py = { version = "3.1.5", markers = "sys_platform != 'win32'" }  # Required for field solver
 
 [tool.poetry.group.mpi]
 optional = true
@@ -50,9 +50,17 @@ cupy-cuda12x = { version = "^13.3.0" }
 [tool.poetry.extras]
 mpi = ["mpi4py", "qutip", "cupy-cuda12x", "h5py", "qiskit", "qiskit-terra", "qiskit-nature", "qiskit-aer", "qiskit-algorithms"]
 
-[tool.poetry.group.dev.dependencies]
+[tool.poetry.group.test]
+optional = true
+
+[tool.poetry.group.test.dependencies]
 pytest = "^8.3.4"
 pytest-cov = "^6.0.0"
+
+[tool.poetry.group.lint]
+optional = true
+
+[tool.poetry.group.lint.dependencies]
 black = "^25.1.0"
 isort = "^6.0.0"
 flake8 = "^7.1.1"

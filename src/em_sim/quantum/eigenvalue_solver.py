@@ -4,11 +4,12 @@ from typing import Tuple
 
 import numpy as np
 from qiskit import QuantumCircuit
+from qiskit.algorithms.minimum_eigensolvers import VQE
+from qiskit.algorithms.optimizers import SPSA
 from qiskit.circuit.library import EfficientSU2
 from qiskit.primitives import Estimator
 from qiskit.quantum_info import SparsePauliOp
-from qiskit.algorithms.minimum_eigensolvers import VQE, VQEResult
-from qiskit.algorithms.optimizers import SPSA
+
 # Already imported above
 
 
@@ -56,5 +57,7 @@ class MaxwellEigenvalueSolver:
 
         # Convert results to numpy arrays with matching shapes
         eigenvalues = np.array([result.eigenvalue.real])
-        eigenvectors = np.array([result.optimal_point])  # Make it 2D array with shape (1, n)
+        eigenvectors = np.array(
+            [result.optimal_point]
+        )  # Make it 2D array with shape (1, n)
         return eigenvalues, eigenvectors

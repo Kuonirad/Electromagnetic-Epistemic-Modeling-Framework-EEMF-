@@ -2,9 +2,9 @@
 
 from typing import Dict, Optional, Tuple, Union
 
+from mpi4py import MPI
 import numpy as np
 import torch
-from mpi4py import MPI
 
 from ..quantum.circuit_mapper import CircuitConfig, MaxwellCircuitMapper
 from ..quantum.eigenvalue_solver import MaxwellEigenvalueSolver
@@ -53,7 +53,9 @@ class EMFieldSolver:
             )
 
         # Initialize field tensors on specified device
-        self.device = "cuda" if torch.cuda.is_available() and device == "cuda" else "cpu"
+        self.device = (
+            "cuda" if torch.cuda.is_available() and device == "cuda" else "cpu"
+        )
         self.E = torch.zeros((*grid_size, 3), device=self.device)
         self.B = torch.zeros((*grid_size, 3), device=self.device)
 
@@ -88,7 +90,8 @@ class EMFieldSolver:
         if use_quantum_solver:
             # Map to quantum circuit and solve eigenvalue problem
             circuit = self.circuit_mapper.map_cavity_modes(
-                dimensions=[float(x) for x in self.grid_size], boundary_conditions={"type": "PEC"}
+                dimensions=[float(x) for x in self.grid_size],
+                boundary_conditions={"type": "PEC"},
             )
             circuit = self.circuit_mapper._hardware_optimize(
                 circuit, self.hardware_config
