@@ -26,10 +26,6 @@ pyquil = { version = ">=4.8.1,<5.0" }
 qiskit = { version = ">=1.0.0,<1.1", extras = ["all"] }  # Include all qiskit extras
 h5py = { version = ">=3.11.0" }  # Required for FDTD solver
 mpi4py = { version = "^3.1.5" }  # Required for field solver
-qiskit-terra = { version = ">=0.46.2,<0.47" }
-qiskit-nature = { version = "^0.7.2" }
-qiskit-aer = { version = "0.12.0" }
-qiskit-algorithms = { version = "0.3.1" }
 
 [tool.poetry.group.mpi]
 optional = true
