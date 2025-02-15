@@ -27,10 +27,10 @@ dependencies = { pyquil = { version = ">=4.8.1,<5.0", extras = [] } }
 
 [tool.poetry.group.dev]
 optional = true
-dependencies = [
-    { name = "h5py", version = ">=3.11.0" },  # Required for FDTD solver
-    { name = "mpi4py", version = "^3.1.5" }  # Required for field solver
-]
+dependencies = {
+    "h5py" = ">=3.11.0",  # Required for FDTD solver
+    "mpi4py" = "^3.1.5"  # Required for field solver
+}
 
 [tool.poetry.group.mpi]
 optional = true
