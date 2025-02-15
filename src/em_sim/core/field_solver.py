@@ -49,13 +49,10 @@ class EMFieldSolver:
                 "hardware_config", HardwareConfig.create_superconducting()
             )
 
-        # Initialize field tensors on GPU if available
-        if self.device == "cuda":
-            self.E = torch.zeros((*grid_size, 3), device="cuda")
-            self.B = torch.zeros((*grid_size, 3), device="cuda")
-        else:
-            self.E = torch.zeros((*grid_size, 3))
-            self.B = torch.zeros((*grid_size, 3))
+        # Initialize field tensors on specified device
+        self.device = "cuda" if torch.cuda.is_available() and device == "cuda" else "cpu"
+        self.E = torch.zeros((*grid_size, 3), device=self.device)
+        self.B = torch.zeros((*grid_size, 3), device=self.device)
 
     def step(
         self,
