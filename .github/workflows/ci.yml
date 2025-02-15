@@ -7,7 +7,6 @@ jobs:
     runs-on: ubuntu-24.04
     env:
       PYTHON_VERSION: "3.11.7"
-      OMPI_VERSION: "5.0.3"
       
     steps:
     - name: Checkout code
@@ -32,27 +31,47 @@ jobs:
         python-version: ${{ env.PYTHON_VERSION }}
         cache: 'pip'
 
+    - name: Install Poetry
+      run: |
+        python -m pip install --upgrade pip
+        python -m pip install pipx
+        pipx install poetry==1.7.1
+
+    - name: Configure Poetry
+      run: |
+        poetry env use ${{ env.pythonLocation }}/bin/python
+        poetry config virtualenvs.in-project true
+
     - name: Configure MPI Environment
       run: |
         echo "MPICC=$(which mpicc)" >> $GITHUB_ENV
         echo "CFLAGS=-I/usr/include/openmpi" >> $GITHUB_ENV
         echo "LDFLAGS=-L/usr/lib/x86_64-linux-gnu/openmpi -lmpi" >> $GITHUB_ENV
 
-    - name: Install Python Dependencies
+    - name: Install Dependencies
       run: |
-        python -m pip install --upgrade pip
-        python -m pip install pipx
-        pipx install poetry==1.7.1
-        poetry config virtualenvs.in-project true
-        poetry install --with mpi,quantum,dev --extras mpi -v --no-interaction
+        MPICC=$(which mpicc) poetry install --with mpi,quantum,dev,lint,test --extras mpi -v --no-interaction
+      env:
+        OMPI_DIR: "/usr/lib/x86_64-linux-gnu/openmpi"
+        C_INCLUDE_PATH: "/usr/lib/x86_64-linux-gnu/openmpi/include"
+        LIBRARY_PATH: "/usr/lib/x86_64-linux-gnu/openmpi/lib"
+
+    - name: Run Linters
+      run: |
+        poetry run black --check .
+        poetry run isort --check-only .
+        poetry run flake8 .
 
     - name: Run Quantum Validation
       run: |
+        mpirun --version
         poetry run python -c "from mpi4py import MPI; print(f'MPI {MPI.Get_library_version()} initialized')"
         poetry run python -c "from qiskit_aer import Aer; print('Available backends:', Aer.backends())"
-        poetry run pytest --cov=src/em_sim --cov-report=xml
 
-    - name: Upload coverage to Codecov
+    - name: Run Tests
+      run: poetry run pytest --cov=src/em_sim --cov-report=xml
+
+    - name: Upload Coverage
       uses: codecov/codecov-action@v3
       with:
         file: ./coverage.xml
