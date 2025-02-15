@@ -3,10 +3,11 @@
 from typing import Dict, List, Tuple
 
 import numpy as np
-from qiskit import QuantumCircuit, execute
+from qiskit import QuantumCircuit
 from qiskit.providers.aer import AerSimulator
 from qiskit_aer.noise import NoiseModel
 from qiskit_aer.noise.errors import QuantumError
+from qiskit.primitives import BackendSampler
 from scipy import stats
 
 
@@ -54,10 +55,9 @@ def apply_zne(
         measured.measure_all()
         measured_circuits.append(measured)
 
+    sampler = BackendSampler(backend=backend)
     results = [
-        execute(circ, backend, shots=1000, optimization_level=0)
-        .result()
-        .get_counts()
+        sampler.run(circ, shots=1000).result().quasi_dists[0]
         for circ in measured_circuits
     ]
 
