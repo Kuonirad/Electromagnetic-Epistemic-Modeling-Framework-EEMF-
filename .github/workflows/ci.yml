@@ -35,10 +35,25 @@ jobs:
     - name: Install system dependencies
       run: |
         sudo apt-get update
-        sudo apt-get install -y openmpi-bin libopenmpi-dev
+        sudo apt-get install -y \
+          libopenmpi-dev \
+          openmpi-common \
+          ocl-icd-opencl-dev \
+          libblas64-dev \
+          libfftw3-dev \
+          libgsl-dev \
+          openmpi-bin
         sudo ldconfig  # Refresh library paths
       env:
         DEBIAN_FRONTEND: noninteractive
+
+    - name: Configure MPI Environment
+      run: |
+        echo "OMPI_DIR=/usr/lib/x86_64-linux-gnu/openmpi" >> $GITHUB_ENV
+        echo "MPICC=$(which mpicc)" >> $GITHUB_ENV
+        echo "CFLAGS=-I$OMPI_DIR/include" >> $GITHUB_ENV
+        echo "LDFLAGS=-L$OMPI_DIR/lib -lmpi" >> $GITHUB_ENV
+        echo "OMPI_MCA_btl=^vader" >> $GITHUB_ENV  # Disable shared memory bypass
 
     - name: Install dependencies
       run: |
@@ -51,7 +66,12 @@ jobs:
     - name: Validate MPI
       run: |
         mpirun --version
-        poetry run python -c "import mpi4py; print(mpi4py.get_config())"
+        poetry run python -c "from mpi4py import MPI; print(f'MPI {MPI.Get_version()}.{MPI.Get_subversion()} detected')"
+
+    - name: Test Qiskit-AER MPI Support
+      run: |
+        poetry run python -c "from qiskit_aer import Aer; \
+        print('MPI Backends:', Aer.backends(name='statevector', method='matrix_product_state'))"
 
     - name: Run tests with coverage
       run: poetry run pytest --cov=src/em_sim --cov-report=xml
@@ -90,10 +110,25 @@ jobs:
     - name: Install system dependencies
       run: |
         sudo apt-get update
-        sudo apt-get install -y openmpi-bin libopenmpi-dev
+        sudo apt-get install -y \
+          libopenmpi-dev \
+          openmpi-common \
+          ocl-icd-opencl-dev \
+          libblas64-dev \
+          libfftw3-dev \
+          libgsl-dev \
+          openmpi-bin
         sudo ldconfig  # Refresh library paths
       env:
         DEBIAN_FRONTEND: noninteractive
+
+    - name: Configure MPI Environment
+      run: |
+        echo "OMPI_DIR=/usr/lib/x86_64-linux-gnu/openmpi" >> $GITHUB_ENV
+        echo "MPICC=$(which mpicc)" >> $GITHUB_ENV
+        echo "CFLAGS=-I$OMPI_DIR/include" >> $GITHUB_ENV
+        echo "LDFLAGS=-L$OMPI_DIR/lib -lmpi" >> $GITHUB_ENV
+        echo "OMPI_MCA_btl=^vader" >> $GITHUB_ENV  # Disable shared memory bypass
 
     - name: Install dependencies
       run: |
