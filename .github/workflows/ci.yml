@@ -57,6 +57,9 @@ jobs:
         export OMPI_DIR=/usr/lib/x86_64-linux-gnu/openmpi
         export C_INCLUDE_PATH=/usr/include/openmpi
         export LIBRARY_PATH=/usr/lib/x86_64-linux-gnu/openmpi/lib
+        export CFLAGS="-I/usr/include/openmpi"
+        export LDFLAGS="-L/usr/lib/x86_64-linux-gnu/openmpi/lib -lmpi"
+        poetry config installer.max-workers 4
         poetry install --with mpi,quantum,dev,lint,test --extras mpi -v --no-interaction
 
     - name: Run Linters
