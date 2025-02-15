@@ -36,7 +36,7 @@ qutip = { version = "^5.1.1" }
 cupy-cuda12x = { version = "^13.3.0" }
 
 [tool.poetry.extras]
-mpi = ["mpi4py", "qutip", "cupy-cuda12x", "h5py", "qiskit", "qiskit-terra", "qiskit-nature", "qiskit-aer", "qiskit-algorithms"]
+mpi = ["mpi4py", "qutip", "cupy-cuda12x", "h5py", "qiskit", "qiskit-terra", "qiskit-nature", "qiskit-aer", "qiskit-algorithms", "qiskit-aer"]
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^8.3.4"
