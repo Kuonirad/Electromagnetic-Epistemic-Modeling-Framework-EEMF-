@@ -1,0 +1,36 @@
+FROM ubuntu:24.04
+
+ENV DEBIAN_FRONTEND=noninteractive
+ENV PYTHON_VERSION=3.11
+
+RUN apt-get update && apt-get install -y \
+    python${PYTHON_VERSION} \
+    python${PYTHON_VERSION}-dev \
+    python3-pip \
+    openmpi-bin \
+    libopenmpi-dev \
+    cmake \
+    ninja-build \
+    gfortran \
+    libarchive-dev \
+    ocl-icd-opencl-dev \
+    libblas64-dev \
+    libfftw3-dev \
+    libgsl-dev \
+    && rm -rf /var/lib/apt/lists/*
+
+COPY pyproject.toml poetry.lock /app/
+WORKDIR /app
+
+RUN python${PYTHON_VERSION} -m pip install --upgrade pip && \
+    python${PYTHON_VERSION} -m pip install poetry==1.7.1 && \
+    poetry config virtualenvs.in-project true && \
+    MPICC=$(which mpicc) \
+    OMPI_DIR=/usr/lib/x86_64-linux-gnu/openmpi \
+    CFLAGS="-I${OMPI_DIR}/include" \
+    LDFLAGS="-L${OMPI_DIR}/lib -lmpi" \
+    poetry install --with mpi,quantum,dev --extras mpi -v
+
+# Validate installation
+RUN poetry run python -c "from mpi4py import MPI; print(f'MPI {MPI.Get_version()}.{MPI.Get_subversion()} detected')" && \
+    poetry run python -c "from qiskit_aer import Aer; print('MPI Backends:', Aer.backends(name='statevector', method='matrix_product_state'))"
