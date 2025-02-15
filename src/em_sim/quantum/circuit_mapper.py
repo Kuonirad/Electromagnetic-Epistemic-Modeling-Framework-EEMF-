@@ -76,11 +76,13 @@ class MaxwellCircuitMapper:
         # Apply base optimizations
         if hw_config.architecture == "superconducting":
             # Convert connectivity map to edge list for CouplingMap
-            edges = [
-                (k, v)
-                for k, adj in hw_config.connectivity_map.items()
-                for v in adj
-            ]
+            edges = []
+            if hasattr(hw_config, 'connectivity_map'):
+                edges = [
+                    (k, v)
+                    for k, adj in hw_config.connectivity_map.items()
+                    for v in adj
+                ]
             # Use LightSabre-inspired layout optimization
             optimized = transpile(
                 circ,
