@@ -4,9 +4,9 @@ from typing import Dict, List, Tuple
 
 import numpy as np
 from qiskit import QuantumCircuit
-from qiskit.providers.aer import AerSimulator
-from qiskit.providers.aer.noise import NoiseModel, QuantumError
-from qiskit.primitives import BackendSampler
+from qiskit_aer import AerSimulator
+from qiskit_aer.noise import NoiseModel, QuantumError
+from qiskit.primitives import Sampler
 from scipy import stats
 
 
@@ -54,9 +54,9 @@ def apply_zne(
         measured.measure_all()
         measured_circuits.append(measured)
 
-    sampler = BackendSampler(backend=backend)
+    sampler = Sampler()
     results = [
-        sampler.run(circ, shots=1000).result().quasi_dists[0]
+        sampler.run(circ, shots=1000, backend=backend).result().quasi_dists[0]
         for circ in measured_circuits
     ]
 
