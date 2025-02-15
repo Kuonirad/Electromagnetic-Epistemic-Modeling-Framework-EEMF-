@@ -4,7 +4,8 @@ from dataclasses import dataclass, field
 from typing import Any, Dict, List
 
 import numpy as np
-from qiskit import QuantumCircuit, QuantumRegister, transpile
+from qiskit import QuantumCircuit, QuantumRegister
+from qiskit.transpiler import transpile
 from qiskit.circuit.library import PauliEvolutionGate
 from qiskit.quantum_info import SparsePauliOp
 from qiskit.transpiler import CouplingMap
