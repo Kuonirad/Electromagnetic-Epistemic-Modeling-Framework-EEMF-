@@ -32,8 +32,26 @@ jobs:
         poetry env use ${{ env.pythonLocation }}/bin/python
         poetry config virtualenvs.in-project true
 
+    - name: Install system dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y openmpi-bin libopenmpi-dev
+        sudo ldconfig  # Refresh library paths
+      env:
+        DEBIAN_FRONTEND: noninteractive
+
     - name: Install dependencies
-      run: poetry install
+      run: |
+        MPICC=$(which mpicc) poetry install --with mpi --extras mpi -v
+      env:
+        OMPI_DIR: "/usr/lib/x86_64-linux-gnu/openmpi"
+        C_INCLUDE_PATH: "${{ env.OMPI_DIR }}/include"
+        LIBRARY_PATH: "${{ env.OMPI_DIR }}/lib"
+
+    - name: Validate MPI
+      run: |
+        mpirun --version
+        poetry run python -c "import mpi4py; print(mpi4py.get_config())"
 
     - name: Run tests with coverage
       run: poetry run pytest --cov=src/em_sim --cov-report=xml
@@ -69,8 +87,21 @@ jobs:
         poetry env use ${{ env.pythonLocation }}/bin/python
         poetry config virtualenvs.in-project true
 
+    - name: Install system dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y openmpi-bin libopenmpi-dev
+        sudo ldconfig  # Refresh library paths
+      env:
+        DEBIAN_FRONTEND: noninteractive
+
     - name: Install dependencies
-      run: poetry install
+      run: |
+        MPICC=$(which mpicc) poetry install --with mpi --extras mpi -v
+      env:
+        OMPI_DIR: "/usr/lib/x86_64-linux-gnu/openmpi"
+        C_INCLUDE_PATH: "${{ env.OMPI_DIR }}/include"
+        LIBRARY_PATH: "${{ env.OMPI_DIR }}/lib"
 
     - name: Run linters
       run: |
