@@ -20,6 +20,10 @@ matplotlib = "^3.8.2"
 pyquil = { version = ">=4.8.1,<5.0" }
 qiskit = { version = ">=1.0.0,<1.1", extras = ["all"] }  # Core Qiskit package with all extras
 qiskit-aer = { version = ">=0.13.0" }  # Required for quantum simulation with MPI support
+
+[tool.poetry.dependencies.pyquil]
+version = ">=4.8.1,<5.0"
+extras = []  # Prevent pulling in old qiskit versions through extras
 h5py = { version = ">=3.11.0" }  # Required for FDTD solver
 mpi4py = { version = "^3.1.5" }  # Required for field solver
 
