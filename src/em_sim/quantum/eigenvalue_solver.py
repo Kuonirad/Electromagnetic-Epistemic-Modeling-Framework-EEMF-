@@ -7,7 +7,7 @@ from qiskit import QuantumCircuit
 from qiskit.circuit.library import EfficientSU2
 from qiskit.primitives import Estimator
 from qiskit.quantum_info import SparsePauliOp
-from qiskit.algorithms import VQE
+from qiskit.algorithms.minimum_eigensolvers import VQE
 from qiskit.algorithms.optimizers import SPSA
 # Already imported above
 
