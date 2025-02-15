@@ -20,12 +20,13 @@ python = "^3.11"
 numpy = "1.26.3"
 scipy = "1.12.0"
 symengine = "^0.11.0"
-torch = { version = ">=2.2,<2.3", python = "<3.12" }
+torch = { version = ">=2.2,<2.3", python = "<3.12", source = "pypi" }  # Explicitly use PyPI
 matplotlib = "^3.8.2"
 pyquil = { version = ">=4.8.1,<5.0" }
 qiskit = { version = ">=1.0.0,<1.1", extras = ["all"] }  # Include all qiskit extras
 qiskit-aer = { version = ">=0.13.0" }  # Required for quantum simulation
 qiskit-algorithms = { version = ">=0.3.1" }  # Required for quantum algorithms
+qiskit-terra = { version = ">=0.46.2,<0.47" }  # Required for core functionality
 h5py = { version = ">=3.11.0" }  # Required for FDTD solver
 mpi4py = { version = "^3.1.5" }  # Required for field solver
 
