@@ -55,7 +55,6 @@ class MaxwellEigenvalueSolver:
         result = vqe.compute_minimum_eigenvalue(operator=hamiltonian)
 
         # Convert results to numpy arrays with matching shapes
-        result = vqe.compute_minimum_eigenvalue(hamiltonian)
         eigenvalues = np.array([result.eigenvalue.real])
         eigenvectors = np.array([result.optimal_point])  # Make it 2D array with shape (1, n)
         return eigenvalues, eigenvectors
