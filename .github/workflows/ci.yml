@@ -60,7 +60,11 @@ jobs:
         export CFLAGS="-I/usr/include/openmpi"
         export LDFLAGS="-L/usr/lib/x86_64-linux-gnu/openmpi/lib -lmpi"
         poetry config installer.max-workers 4
-        poetry install --with mpi,quantum,dev,lint,test --extras mpi -v --no-interaction
+        poetry install --with mpi,quantum,dev,test --extras mpi -v --no-interaction
+
+    - name: Install Linting Tools
+      run: |
+        poetry install --with lint --no-interaction
 
     - name: Run Linters
       run: |
