@@ -45,16 +45,19 @@ jobs:
     - name: Configure MPI Environment
       run: |
         echo "MPICC=$(which mpicc)" >> $GITHUB_ENV
+        echo "OMPI_DIR=/usr/lib/x86_64-linux-gnu/openmpi" >> $GITHUB_ENV
+        echo "C_INCLUDE_PATH=/usr/include/openmpi" >> $GITHUB_ENV
+        echo "LIBRARY_PATH=/usr/lib/x86_64-linux-gnu/openmpi/lib" >> $GITHUB_ENV
         echo "CFLAGS=-I/usr/include/openmpi" >> $GITHUB_ENV
-        echo "LDFLAGS=-L/usr/lib/x86_64-linux-gnu/openmpi -lmpi" >> $GITHUB_ENV
+        echo "LDFLAGS=-L/usr/lib/x86_64-linux-gnu/openmpi/lib -lmpi" >> $GITHUB_ENV
 
     - name: Install Dependencies
       run: |
-        MPICC=$(which mpicc) poetry install --with mpi,quantum,dev,lint,test --extras mpi -v --no-interaction
-      env:
-        OMPI_DIR: "/usr/lib/x86_64-linux-gnu/openmpi"
-        C_INCLUDE_PATH: "/usr/lib/x86_64-linux-gnu/openmpi/include"
-        LIBRARY_PATH: "/usr/lib/x86_64-linux-gnu/openmpi/lib"
+        export MPICC=$(which mpicc)
+        export OMPI_DIR=/usr/lib/x86_64-linux-gnu/openmpi
+        export C_INCLUDE_PATH=/usr/include/openmpi
+        export LIBRARY_PATH=/usr/lib/x86_64-linux-gnu/openmpi/lib
+        poetry install --with mpi,quantum,dev,lint,test --extras mpi -v --no-interaction
 
     - name: Run Linters
       run: |
