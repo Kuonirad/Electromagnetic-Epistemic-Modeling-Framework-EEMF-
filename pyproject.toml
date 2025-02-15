@@ -19,16 +19,15 @@ torch = { version = ">=2.2,<2.3", python = "<3.12" }  # CPU-only version
 matplotlib = "^3.8.2"
 pyquil = { version = ">=4.8.1,<5.0" }
 qiskit = { version = ">=1.0.0,<1.1", extras = ["all"] }  # Core Qiskit package with all extras
-qiskit-aer = { version = ">=0.13.0,<0.15.0" }  # Required for quantum simulation with MPI support
-
-[tool.poetry.dependencies.pyquil]
-version = ">=4.8.1,<5.0"
-optional = true
-extras = []  # Prevent pulling in old qiskit versions through extras
+qiskit-aer = { version = ">=0.13.0,<0.15.0", extras = ["mpi"] }  # Required for quantum simulation with MPI support
 
 [tool.poetry.group.quantum]
 optional = true
 dependencies = { pyquil = { version = ">=4.8.1,<5.0", extras = [] } }
+
+[tool.poetry.group.dev]
+optional = true
+dependencies = { qiskit-algorithms = { version = ">=0.3.1" } }
 h5py = { version = ">=3.11.0" }  # Required for FDTD solver
 mpi4py = { version = "^3.1.5" }  # Required for field solver
 
