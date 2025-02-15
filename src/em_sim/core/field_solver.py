@@ -43,7 +43,10 @@ class EMFieldSolver:
             circuit_config = quantum_config.get(
                 "circuit_config", CircuitConfig()
             )
-            self.circuit_mapper = MaxwellCircuitMapper(circuit_config)
+            if isinstance(circuit_config, CircuitConfig):
+                self.circuit_mapper = MaxwellCircuitMapper(circuit_config)
+            else:
+                raise ValueError("Invalid circuit configuration type")
             self.eigenvalue_solver = MaxwellEigenvalueSolver()
             self.hardware_config = quantum_config.get(
                 "hardware_config", HardwareConfig.create_superconducting()
@@ -85,7 +88,7 @@ class EMFieldSolver:
         if use_quantum_solver:
             # Map to quantum circuit and solve eigenvalue problem
             circuit = self.circuit_mapper.map_cavity_modes(
-                dimensions=self.grid_size, boundary_conditions={"type": "PEC"}
+                dimensions=[float(x) for x in self.grid_size], boundary_conditions={"type": "PEC"}
             )
             circuit = self.circuit_mapper._hardware_optimize(
                 circuit, self.hardware_config
