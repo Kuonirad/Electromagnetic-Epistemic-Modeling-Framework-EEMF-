@@ -39,7 +39,7 @@ optional = true
 
 [tool.poetry.group.dev.dependencies]
 h5py = ">=3.11.0"  # Required for FDTD solver
-mpi4py = { version = "3.1.5", markers = "sys_platform != 'win32'" }  # Required for field solver
+mpi4py = { version = "4.0.3", markers = "sys_platform != 'win32'" }  # Required for field solver
 
 [tool.poetry.group.mpi]
 optional = true
