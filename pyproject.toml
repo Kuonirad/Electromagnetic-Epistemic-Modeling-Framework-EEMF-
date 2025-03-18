@@ -18,7 +18,7 @@ readme = "README.md"
 [tool.poetry.dependencies]
 python = "^3.11"
 numpy = "1.26.3"
-scipy = "1.12.0"
+scipy = "1.15.2"
 symengine = "^0.11.0"
 torch = { version = ">=2.2,<2.7", python = "<3.12" }  # CPU-only version
 matplotlib = "^3.8.2"
