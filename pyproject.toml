@@ -23,7 +23,7 @@ symengine = "^0.11.0"
 torch = { version = ">=2.2,<2.7", python = "<3.12" }  # CPU-only version
 matplotlib = "^3.8.2"
 pyquil = { version = ">=4.8.1,<5.0" }
-qiskit-terra = "0.46.2"  # Critical for MPI compatibility
+qiskit-terra = "0.46.3"  # Critical for MPI compatibility
 qiskit-aer = { version = "0.13.0", extras = ["mpi"] }  # Required for quantum simulation with MPI support
 qiskit-algorithms = "0.3.1"  # Match Qiskit 1.0.x requirements
 
